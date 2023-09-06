@@ -1,3 +1,4 @@
+
 package com.app.medStock.model;
 
 import java.io.Serializable;
