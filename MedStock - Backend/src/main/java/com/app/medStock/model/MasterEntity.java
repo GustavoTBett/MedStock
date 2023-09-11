@@ -14,6 +14,7 @@ import javax.persistence.Version;
  *
  * @author gusta
  */
+//@MappedSuperclass
 public abstract class MasterEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

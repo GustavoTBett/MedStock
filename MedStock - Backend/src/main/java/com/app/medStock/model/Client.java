@@ -6,16 +6,27 @@ import com.app.medStock.enums.State;
  *
  * @author gusta
  */
-//@Entity
-//@Table(name = "provider")
-public class Provider extends MasterEntity implements PersonalData{
+public class Client extends MasterEntity implements PersonalData {
     private String name;
     private String email;
     private Long phone;
-    private String cnpj;
+    private String cpf;
     private String zipcode;
     private String address;
     private State state;
+
+    public Client() {
+    }
+
+    public Client(String name, String email, Long phone, String cpf, String zipcode, String address, State state) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.cpf = cpf;
+        this.zipcode = zipcode;
+        this.address = address;
+        this.state = state;
+    }
 
     public String getName() {
         return name;
@@ -41,14 +52,13 @@ public class Provider extends MasterEntity implements PersonalData{
         this.phone = phone;
     }
 
-    public String getCnpj() {
-        return cnpj;
+    public String getCpf() {
+        return cpf;
     }
 
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
-    }
-
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
+    } 
     public String getZipcode() {
         return zipcode;
     }
@@ -72,23 +82,10 @@ public class Provider extends MasterEntity implements PersonalData{
     public void setState(State state) {
         this.state = state;
     }
-
-    public Provider() {
-    }
-
-    public Provider(String name, String email, Long phone, String cnpj, String zipcode, String address, State state) {
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.cnpj = cnpj;
-        this.zipcode = zipcode;
-        this.address = address;
-        this.state = state;
-    }
     
     @Override
     public ContactInfo getPersonalInfo() {
-        ContactInfo contactInfo = new ContactInfo(name, email, phone, cnpj, zipcode, address, state);
+        ContactInfo contactInfo = new ContactInfo(name, email, phone, cpf, zipcode, address, state);
         return contactInfo;
     }
 }

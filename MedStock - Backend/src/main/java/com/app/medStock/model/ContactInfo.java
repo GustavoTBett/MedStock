@@ -6,16 +6,24 @@ import com.app.medStock.enums.State;
  *
  * @author gusta
  */
-//@Entity
-//@Table(name = "provider")
-public class Provider extends MasterEntity implements PersonalData{
+public class ContactInfo {
     private String name;
     private String email;
     private Long phone;
-    private String cnpj;
+    private String document;
     private String zipcode;
     private String address;
     private State state;
+
+    public ContactInfo(String name, String email, Long phone, String document, String zipcode, String address, State state) {
+        this.name = name;
+        this.email = email;
+        this.phone = phone;
+        this.document = document;
+        this.zipcode = zipcode;
+        this.address = address;
+        this.state = state;
+    }
 
     public String getName() {
         return name;
@@ -41,12 +49,12 @@ public class Provider extends MasterEntity implements PersonalData{
         this.phone = phone;
     }
 
-    public String getCnpj() {
-        return cnpj;
+    public String getDocument() {
+        return document;
     }
 
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
+    public void setDocument(String document) {
+        this.document = document;
     }
 
     public String getZipcode() {
@@ -73,22 +81,5 @@ public class Provider extends MasterEntity implements PersonalData{
         this.state = state;
     }
 
-    public Provider() {
-    }
-
-    public Provider(String name, String email, Long phone, String cnpj, String zipcode, String address, State state) {
-        this.name = name;
-        this.email = email;
-        this.phone = phone;
-        this.cnpj = cnpj;
-        this.zipcode = zipcode;
-        this.address = address;
-        this.state = state;
-    }
     
-    @Override
-    public ContactInfo getPersonalInfo() {
-        ContactInfo contactInfo = new ContactInfo(name, email, phone, cnpj, zipcode, address, state);
-        return contactInfo;
-    }
 }

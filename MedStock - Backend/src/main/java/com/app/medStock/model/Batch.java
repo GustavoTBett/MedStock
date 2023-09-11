@@ -1,15 +1,13 @@
 package com.app.medStock.model;
 
 import java.time.LocalDate;
-import javax.persistence.Entity;
-import javax.persistence.Table;
 
 /**
  *
  * @author gusta
  */
-@Entity
-@Table(name = "batch")
+//@Entity
+//@Table(name = "batch")
 public class Batch extends MasterEntity{
     private Long number;
     private LocalDate fabricationDate;
