@@ -8,35 +8,22 @@ import java.time.LocalDateTime;
  *
  * @author gusta
  */
-public class Service extends MasterEntity{
-    private LocalDateTime purchaseDate;
+public class Service extends MasterEntity implements FinancialOperations{
+    private LocalDateTime serviceDate;
     private Client client;
     private OrderType type = OrderType.SERVICE;
-    private BigDecimal originalPrice;
-    private BigDecimal fees;
-    private BigDecimal discount;
+    private Item item;
     private String description;
 
     public Service() {
     }
 
-    public Service(LocalDateTime purchaseDate, Client client, BigDecimal originalPrice, BigDecimal fees, BigDecimal discount, String description) {
-        this.purchaseDate = purchaseDate;
+    public Service(LocalDateTime purchaseDate, Client client, String description) {
+        this.serviceDate = purchaseDate;
         this.client = client;
-        this.originalPrice = originalPrice;
-        this.fees = fees;
-        this.discount = discount;
         this.description = description;
     }
-
-    public LocalDateTime getPurchaseDate() {
-        return purchaseDate;
-    }
-
-    public void setPurchaseDate(LocalDateTime purchaseDate) {
-        this.purchaseDate = purchaseDate;
-    }
-
+    
     public Client getClient() {
         return client;
     }
@@ -48,31 +35,7 @@ public class Service extends MasterEntity{
     public OrderType getType() {
         return type;
     }
-
-    public BigDecimal getOriginalPrice() {
-        return originalPrice;
-    }
-
-    public void setOriginalPrice(BigDecimal originalPrice) {
-        this.originalPrice = originalPrice;
-    }
-
-    public BigDecimal getFees() {
-        return fees;
-    }
-
-    public void setFees(BigDecimal fees) {
-        this.fees = fees;
-    }
-
-    public BigDecimal getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(BigDecimal discount) {
-        this.discount = discount;
-    }
-
+    
     public String getDescription() {
         return description;
     }
@@ -80,6 +43,35 @@ public class Service extends MasterEntity{
     public void setDescription(String description) {
         this.description = description;
     }
-    
-    
+
+    public LocalDateTime getServiceDate() {
+        return serviceDate;
+    }
+
+    public void setServiceDate(LocalDateTime serviceDate) {
+        this.serviceDate = serviceDate;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
+
+    @Override
+    public LocalDateTime getOrderDate() {
+        return this.serviceDate;
+    }
+
+    @Override
+    public BigDecimal getTotalOrderValue() {
+        return this.getItem().getFinalPrice();
+    }
+
+    @Override
+    public OrderType getOrderType() {
+        return OrderType.SERVICE;
+    }
 }

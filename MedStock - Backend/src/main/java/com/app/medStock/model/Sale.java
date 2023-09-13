@@ -10,33 +10,27 @@ import java.util.List;
  *
  * @author gusta
  */
-public class Sale extends MasterEntity{
-    private LocalDateTime purchaseDate;
+public class Sale extends MasterEntity implements FinancialOperations{
+    private LocalDateTime saleDate;
     private Client client;
     private OrderType type = OrderType.SALE;
-    private BigDecimal originalPrice;
-    private BigDecimal fees;
-    private BigDecimal discount;
     private List<Item> itens = new ArrayList<>();
 
     public Sale() {
     }
 
-    public Sale(LocalDateTime purchaseDate, Client client, BigDecimal originalPrice, BigDecimal fees, BigDecimal discount, List<Item> itens) {
-        this.purchaseDate = purchaseDate;
+    public Sale(LocalDateTime purchaseDate, Client client, List<Item> itens) {
+        this.saleDate = purchaseDate;
         this.client = client;
-        this.originalPrice = originalPrice;
-        this.fees = fees;
-        this.discount = discount;
         this.itens = itens;
     }
 
-    public LocalDateTime getPurchaseDate() {
-        return purchaseDate;
+    public LocalDateTime getSaleDate() {
+        return saleDate;
     }
 
-    public void setPurchaseDate(LocalDateTime purchaseDate) {
-        this.purchaseDate = purchaseDate;
+    public void setSaleDate(LocalDateTime saleDate) {
+        this.saleDate = saleDate;
     }
 
     public Client getClient() {
@@ -51,35 +45,26 @@ public class Sale extends MasterEntity{
         return type;
     }
 
-    public BigDecimal getOriginalPrice() {
-        return originalPrice;
-    }
-
-    public void setOriginalPrice(BigDecimal originalPrice) {
-        this.originalPrice = originalPrice;
-    }
-
-    public BigDecimal getFees() {
-        return fees;
-    }
-
-    public void setFees(BigDecimal fees) {
-        this.fees = fees;
-    }
-
-    public BigDecimal getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(BigDecimal discount) {
-        this.discount = discount;
-    }
-
     public List<Item> getItens() {
         return itens;
     }
 
     public void setItens(List<Item> itens) {
         this.itens = itens;
+    }
+
+    @Override
+    public LocalDateTime getOrderDate() {
+        return this.saleDate;
+    }
+
+    @Override
+    public BigDecimal getTotalOrderValue() {
+        return BigDecimal.valueOf(this.getItens().stream().mapToDouble(item -> item.getFinalPrice().doubleValue()).sum());
+    }
+
+    @Override
+    public OrderType getOrderType() {
+        return OrderType.SALE;
     }
 }

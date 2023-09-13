@@ -26,7 +26,10 @@ public class Item extends MasterEntity{
 
     public BigDecimal getFinalPrice() {
         BigDecimal total = price.multiply(BigDecimal.valueOf(quantity));
-        return total;
+        Double jurosCalculado = price.doubleValue() * (fees / 100);
+        Double descontoCalculado = price.doubleValue() * (discount / 100);
+        BigDecimal diferenca = BigDecimal.valueOf(jurosCalculado - descontoCalculado);
+        return total.add(diferenca);
     }
 
     public Product getProduct() {
