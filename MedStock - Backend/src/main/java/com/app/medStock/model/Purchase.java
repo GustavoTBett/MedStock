@@ -14,7 +14,6 @@ public class Purchase extends MasterEntity implements FinancialOperations{
     private LocalDateTime purchaseDate;
     private Provider provider;
     private OrderType type = OrderType.PURCHASE;
-    
     private List<Item> itens = new ArrayList<>();
 
     public Purchase() {
@@ -61,12 +60,12 @@ public class Purchase extends MasterEntity implements FinancialOperations{
 
     @Override
     public BigDecimal getTotalOrderValue() {
-        return BigDecimal.ONE;
+        return BigDecimal.valueOf(this.getItens().stream().mapToDouble(item -> item.getFinalPrice().doubleValue()).sum());
     }
 
     @Override
     public OrderType getOrderType() {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+        return OrderType.PURCHASE;
     }
     
     
