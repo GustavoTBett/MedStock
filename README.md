@@ -12,6 +12,7 @@ O MedStock é uma aplicação de software robusta e escalável, desenvolvida par
 ## Autores
 
 - [@GustavoTBett](https://github.com/GustavoTBett)
+- [@DouglasKuerten](https://github.com/DouglasKuerten)
 
 # Front-end
 O front-end do MedStock é desenvolvido utilizando a biblioteca React, interface do usuário foi projetada com uma abordagem centrada no usuário, fornecendo uma experiência agradável e eficiente. 
