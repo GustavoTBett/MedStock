@@ -2,19 +2,30 @@ package com.app.medStock.model;
 
 import com.app.medStock.enums.State;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+
 /**
  *
  * @author gusta
  */
 //@Entity
 //@Table(name = "provider")
+@Entity
 public class Provider extends MasterEntity implements PersonalData{
+    @Column(name = "name")
     private String name;
+    @Column(name = "email")
     private String email;
+    @Column(name = "phone")
     private Long phone;
+    @Column(name = "cnpj")
     private String cnpj;
+    @Column(name = "zipcode")
     private String zipcode;
+    @Column(name = "address")
     private String address;
+    @Column(name = "state")
     private State state;
 
     public String getName() {
