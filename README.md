@@ -12,6 +12,7 @@ O MedStock é uma aplicação de software robusta e escalável, desenvolvida par
 ## Autores
 
 - [@GustavoTBett](https://github.com/GustavoTBett)
+- [@DouglasKuerten](https://github.com/DouglasKuerten)
 
 # Front-end
 O front-end do MedStock é desenvolvido utilizando a biblioteca React, interface do usuário foi projetada com uma abordagem centrada no usuário, fornecendo uma experiência agradável e eficiente. 
@@ -38,18 +39,17 @@ O PostgreSQL é um sistema de gerenciamento de banco de dados relacional de cód
 
 * Integração de Terceiros: O sistema pode ser integrado com sistemas de prescrição médica, sistemas de pagamento e outros sistemas externos por meio de APIs.
 
-# Requisitos
+# Regras de Negócio
 
 ## Gestão de Estoque:
 * Cadastro de Produtos: A aplicação deve permitir o cadastro detalhado de produtos farmacêuticos, incluindo informações como nome, descrição, código, categoria, fabricante e informações relacionadas à saúde (se necessário).
 * Rastreamento de Produtos: Deve ser possível rastrear produtos por meio de números de lote, datas de validade e fornecedores.
 * Controle de Quantidade: O sistema deve fornecer informações em tempo real sobre as quantidades disponíveis de cada produto em estoque.
 * Alertas de Estoque Baixo: A aplicação deve enviar alertas proativos quando os níveis de estoque estiverem baixos, com base em critérios predefinidos.
-* Histórico de Movimentação: Deve ser possível rastrear o histórico de movimentação de produtos, incluindo entradas, saídas e transferências.
+* Histórico de Movimentação: Deve ser possível rastrear o histórico de movimentação de produtos.
 
 ## Registro de Vendas:
 * Registro de Vendas: A aplicação deve permitir o registro detalhado das vendas, incluindo informações sobre os produtos vendidos, clientes, data e detalhes financeiros.
-* Integração com Sistemas de Prescrição: Deve ser possível integrar a aplicação com sistemas de prescrição médica para verificar a venda de medicamentos sujeitos a receita e garantir conformidade legal.
 
 ## Gestão Financeira:
 * Acompanhamento Financeiro: A aplicação deve permitir o registro de receitas e despesas associadas às vendas e operações do negócio.

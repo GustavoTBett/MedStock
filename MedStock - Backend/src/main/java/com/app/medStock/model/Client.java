@@ -2,17 +2,28 @@ package com.app.medStock.model;
 
 import com.app.medStock.enums.State;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+
 /**
  *
  * @author gusta
  */
+@Entity
 public class Client extends MasterEntity implements PersonalData {
+    @Column(name = "name")
     private String name;
+    @Column(name = "email")
     private String email;
+    @Column(name = "phone")
     private Long phone;
+    @Column(name = "cpf")
     private String cpf;
+    @Column(name = "zipcode")
     private String zipcode;
+    @Column(name = "adress")
     private String address;
+    @Column(name = "state")
     private State state;
 
     public Client() {
