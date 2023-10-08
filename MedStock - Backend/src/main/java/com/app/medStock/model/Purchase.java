@@ -1,6 +1,9 @@
 package com.app.medStock.model;
 
 import com.app.medStock.enums.OrderType;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -10,10 +13,15 @@ import java.util.List;
  *
  * @author gusta
  */
+@Entity
 public class Purchase extends MasterEntity implements FinancialOperations{
+    @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
+    @Column(name = "provider")
     private Provider provider;
+    @Column(name = "type")
     private OrderType type = OrderType.PURCHASE;
+    @Column(name = "itens")
     private List<Item> itens = new ArrayList<>();
 
     public Purchase() {
