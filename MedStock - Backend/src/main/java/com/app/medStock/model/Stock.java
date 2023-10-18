@@ -1,14 +1,20 @@
 package com.app.medStock.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+
 /**
  *
  * @author gusta
  */
-//@Entity
-//@Table(name = "stock")
+@Entity
+@Table(name = "stock")
 public class Stock extends MasterEntity{
+    @Column(name = "product")
     private Product product;
+    @Column(name = "batch")
     private Batch batch;
+    @Column(name = "quantity")
     private Long quantity;
 
     public Product getProduct() {
