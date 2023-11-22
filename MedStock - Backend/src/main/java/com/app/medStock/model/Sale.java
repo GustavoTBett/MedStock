@@ -12,9 +12,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 
 /**
  *
@@ -22,9 +19,6 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @Table(name = "sale")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
 public class Sale extends MasterEntity implements FinancialOperations{
     @Column(name = "sale_date")
     private LocalDateTime saleDate;
@@ -38,6 +32,52 @@ public class Sale extends MasterEntity implements FinancialOperations{
     @OneToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
+    
+    public Sale() {
+    }
+
+    public Sale(LocalDateTime purchaseDate, Client client, List<Item> itens, Employee employee) {
+        this.saleDate = purchaseDate;
+        this.client = client;
+        this.itens = itens;
+        this.employee = employee;
+    }
+
+    public LocalDateTime getSaleDate() {
+        return saleDate;
+    }
+
+    public void setSaleDate(LocalDateTime saleDate) {
+        this.saleDate = saleDate;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public OrderType getType() {
+        return type;
+    }
+
+    public List<Item> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<Item> itens) {
+        this.itens = itens;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
+    }
 
     @Override
     public LocalDateTime getOrderDate() {
