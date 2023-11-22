@@ -2,9 +2,11 @@ package com.app.medStock.controller;
 
 import com.app.medStock.model.User;
 import com.app.medStock.repository.UserRepository;
+import com.querydsl.core.types.Predicate;
 import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +31,12 @@ public class UserController {
     public ResponseEntity create(@RequestBody User entity) {
         User save = userRepository.save(entity);
         return ResponseEntity.created(URI.create("api/user/" + entity.getId())).body(save);
+    }
+    
+    @GetMapping("/querydsl")
+    public ResponseEntity getBatch(@QuerydslPredicate(root = User.class) Predicate predicate) {
+        List<User> users = (List<User>) userRepository.findAll(predicate);
+        return ResponseEntity.ok(users);
     }
     
     @GetMapping
