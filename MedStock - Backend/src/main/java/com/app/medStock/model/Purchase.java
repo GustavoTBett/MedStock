@@ -8,58 +8,33 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
  * @author gusta
  */
 @Entity
+@Table(name = "purchase")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Purchase extends MasterEntity implements FinancialOperations{
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
-    @Column(name = "provider")
+    @ManyToOne
+    @JoinColumn(name = "provider_id")
     private Provider provider;
     @Column(name = "type")
     private OrderType type = OrderType.PURCHASE;
-    @Column(name = "itens")
+    @OneToMany(mappedBy = "product")
     private List<Item> itens = new ArrayList<>();
-
-    public Purchase() {
-    }
-
-    public Purchase(LocalDateTime purchaseDate, Provider provider, List<Item> itens) {
-        this.purchaseDate = purchaseDate;
-        this.provider = provider;
-        this.itens = itens;
-    }
-
-    public LocalDateTime getPurchaseDate() {
-        return purchaseDate;
-    }
-
-    public void setPurchaseDate(LocalDateTime purchaseDate) {
-        this.purchaseDate = purchaseDate;
-    }
-
-    public Provider getProvider() {
-        return provider;
-    }
-
-    public void setProvider(Provider provider) {
-        this.provider = provider;
-    }
-
-    public OrderType getType() {
-        return type;
-    }
-
-    public List<Item> getItens() {
-        return itens;
-    }
-
-    public void setItens(List<Item> itens) {
-        this.itens = itens;
-    }
 
     @Override
     public LocalDateTime getOrderDate() {
@@ -75,6 +50,4 @@ public class Purchase extends MasterEntity implements FinancialOperations{
     public OrderType getOrderType() {
         return OrderType.PURCHASE;
     }
-    
-    
 }

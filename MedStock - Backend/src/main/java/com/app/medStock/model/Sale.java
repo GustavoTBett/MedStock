@@ -8,58 +8,36 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  *
  * @author gusta
  */
 @Entity
+@Table(name = "sale")
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class Sale extends MasterEntity implements FinancialOperations{
     @Column(name = "sale_date")
     private LocalDateTime saleDate;
-    @Column(name = "client")
+    @OneToOne
+    @JoinColumn(name = "client_id")
     private Client client;
     @Column(name = "type")
     private OrderType type = OrderType.SALE;
-    @Column(name = "itens")
+    @OneToMany(mappedBy = "product")
     private List<Item> itens = new ArrayList<>();
-
-    public Sale() {
-    }
-
-    public Sale(LocalDateTime purchaseDate, Client client, List<Item> itens) {
-        this.saleDate = purchaseDate;
-        this.client = client;
-        this.itens = itens;
-    }
-
-    public LocalDateTime getSaleDate() {
-        return saleDate;
-    }
-
-    public void setSaleDate(LocalDateTime saleDate) {
-        this.saleDate = saleDate;
-    }
-
-    public Client getClient() {
-        return client;
-    }
-
-    public void setClient(Client client) {
-        this.client = client;
-    }
-
-    public OrderType getType() {
-        return type;
-    }
-
-    public List<Item> getItens() {
-        return itens;
-    }
-
-    public void setItens(List<Item> itens) {
-        this.itens = itens;
-    }
+    @OneToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
 
     @Override
     public LocalDateTime getOrderDate() {
