@@ -1,10 +1,13 @@
 package com.app.medStock.controller;
 
 import com.app.medStock.model.Provider;
+import com.app.medStock.model.Purchase;
 import com.app.medStock.repository.ProviderRepository;
+import com.querydsl.core.types.Predicate;
 import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +32,12 @@ public class ProviderController {
     public ResponseEntity create(@RequestBody Provider entity) {
         Provider save = providerRepository.save(entity);
         return ResponseEntity.created(URI.create("api/provider/" + entity.getId())).body(save);
+    }
+    
+    @GetMapping("/querydsl")
+    public ResponseEntity getBatch(@QuerydslPredicate(root = Provider.class) Predicate predicate) {
+        List<Provider> providers = (List<Provider>) providerRepository.findAll(predicate);
+        return ResponseEntity.ok(providers);
     }
     
     @GetMapping

@@ -1,10 +1,13 @@
 package com.app.medStock.controller;
 
 import com.app.medStock.model.Employee;
+import com.app.medStock.model.Item;
 import com.app.medStock.repository.EmployeeRepository;
+import com.querydsl.core.types.Predicate;
 import java.net.URI;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,6 +32,12 @@ public class EmployeeController {
     public ResponseEntity create(@RequestBody Employee entity) {
         Employee save = employeeRepository.save(entity);
         return ResponseEntity.created(URI.create("api/employee/" + entity.getId())).body(save);
+    }
+    
+    @GetMapping("/querydsl")
+    public ResponseEntity getBatch(@QuerydslPredicate(root = Employee.class) Predicate predicate) {
+        List<Employee> employees = (List<Employee>) employeeRepository.findAll(predicate);
+        return ResponseEntity.ok(employees);
     }
     
     @GetMapping

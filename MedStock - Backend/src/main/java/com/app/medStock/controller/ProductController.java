@@ -1,10 +1,16 @@
 package com.app.medStock.controller;
 
+import com.app.medStock.dto.Produto;
+import com.app.medStock.dto.ProdutoInsert;
 import com.app.medStock.model.Product;
 import com.app.medStock.repository.ProductRepository;
+import com.querydsl.core.types.Predicate;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,28 +27,48 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/product")
 public class ProductController {
-    
+
     @Autowired
     private ProductRepository productRepository;
-    
+
     @PostMapping
-    public ResponseEntity create(@RequestBody Product entity) {
-        Product save = productRepository.save(entity);
-        return ResponseEntity.created(URI.create("api/product/" + entity.getId())).body(save);
+    public ResponseEntity create(@RequestBody ProdutoInsert entity) {
+        try {
+            Product product = new Product(entity.getNome(), entity.getDescricao(), entity.getCodigo(), entity.getCategoria(), entity.getFabricante());
+            product = productRepository.save(product);
+            Produto produto = new Produto(product);
+            return ResponseEntity.created(URI.create("api/product/" + produto.getId())).body(produto);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
-    
+
+    @GetMapping("/querydsl")
+    public ResponseEntity getBatch(@QuerydslPredicate(root = Produto.class) Predicate predicate) {
+        try {
+            List<Product> products = (List<Product>) productRepository.findAll(predicate);
+            List<Produto> produtos = new ArrayList<>();
+            products.forEach(action -> {
+                produtos.add(new Produto(action));
+            });
+            return ResponseEntity.ok(products);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
+    }
+
     @GetMapping
     public ResponseEntity findAll() {
         List<Product> products = productRepository.findAll();
         return ResponseEntity.ok(products);
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Long id) {
         Product produto = productRepository.findById(id).orElse(null);
         return ResponseEntity.ok(produto);
     }
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity remove(@PathVariable("id") Long id) {
         productRepository.deleteById(id);
