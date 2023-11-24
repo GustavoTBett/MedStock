@@ -1,42 +1,39 @@
-package com.app.medStock.dto;
+package com.app.medStock.dto.provider;
 
 import com.app.medStock.enums.State;
-import com.app.medStock.model.Client;
+import com.app.medStock.model.Provider;
 
 /**
  *
  * @author gustavo
  */
-public class Cliente extends MasterEntityDto {
+public class FornecedorInsert {
     private String nome;
     private String email;
     private Long telefone;
-    private String cpf;
+    private String cnpj;
     private String cep;
     private String endereco;
     private State estado;
     
-    public Cliente(Client client) {
-        this.setId(client.getId());
-        this.setCriado(client.getCreated());
-        this.setVersao(client.getVersion());
-        this.nome = client.getName();
-        this.email = client.getEmail();
-        this.telefone = client.getPhone();
-        this.cpf = client.getCpf();
-        this.cep = client.getZipcode();
-        this.endereco = client.getAddress();
-        this.estado = client.getState();
+    public FornecedorInsert(Provider provider) {
+        this.nome = provider.getName();
+        this.email = provider.getEmail();
+        this.telefone = provider.getPhone();
+        this.cnpj = provider.getCnpj();
+        this.cep = provider.getZipcode();
+        this.endereco = provider.getAddress();
+        this.estado = provider.getState();
     }
 
-    public Cliente() {
+    public FornecedorInsert() {
     }
 
-    public Cliente(String nome, String email, Long telefone, String cpf, String cep, String endereco, State estado) {
+    public FornecedorInsert(String nome, String email, Long telefone, String cnpj, String cep, String endereco, State estado) {
         this.nome = nome;
         this.email = email;
         this.telefone = telefone;
-        this.cpf = cpf;
+        this.cnpj = cnpj;
         this.cep = cep;
         this.endereco = endereco;
         this.estado = estado;
@@ -66,12 +63,12 @@ public class Cliente extends MasterEntityDto {
         this.telefone = telefone;
     }
 
-    public String getCpf() {
-        return cpf;
+    public String getCnpj() {
+        return cnpj;
     }
 
-    public void setCpf(String cpf) {
-        this.cpf = cpf;
+    public void setCnpj(String cnpj) {
+        this.cnpj = cnpj;
     }
 
     public String getCep() {

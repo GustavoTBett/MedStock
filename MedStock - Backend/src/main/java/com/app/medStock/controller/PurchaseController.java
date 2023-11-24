@@ -1,13 +1,20 @@
 package com.app.medStock.controller;
 
+import com.app.medStock.dto.purchase.Compra;
+import com.app.medStock.dto.purchase.CompraInsert;
+import com.app.medStock.model.Item;
+import com.app.medStock.model.Provider;
 import com.app.medStock.model.Purchase;
-import com.app.medStock.model.Sale;
+import com.app.medStock.repository.ItemRepository;
+import com.app.medStock.repository.ProviderRepository;
 import com.app.medStock.repository.PurchaseRepository;
 import com.querydsl.core.types.Predicate;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,37 +31,82 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/purchase")
 public class PurchaseController {
-    
+
     @Autowired
     private PurchaseRepository purchaseRepository;
-    
+    @Autowired
+    private ProviderRepository providerRepository;
+    @Autowired
+    private ItemRepository itemRepository;
+
     @PostMapping
-    public ResponseEntity create(@RequestBody Purchase entity) {
-        Purchase save = purchaseRepository.save(entity);
-        return ResponseEntity.created(URI.create("api/purchase/" + entity.getId())).body(save);
+    public ResponseEntity create(@RequestBody CompraInsert entity) {
+        try {
+            Provider provider = providerRepository.findById(entity.getFornecedorId()).orElse(null);
+            List<Item> itens = new ArrayList<>();
+            entity.getItensId().forEach(action -> {
+                itens.add(itemRepository.findById(action).orElse(null));
+            });
+            Purchase purchase = new Purchase(entity.getDataCompra(), provider, itens);
+            purchase = purchaseRepository.save(purchase);
+            Compra compra = new Compra(purchase);
+            return ResponseEntity.created(URI.create("api/purchase/" + compra.getId())).body(compra);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
+
     }
-    
+
     @GetMapping("/querydsl")
     public ResponseEntity getBatch(@QuerydslPredicate(root = Purchase.class) Predicate predicate) {
-        List<Purchase> purchases = (List<Purchase>) purchaseRepository.findAll(predicate);
-        return ResponseEntity.ok(purchases);
+        try {
+            List<Purchase> purchases = (List<Purchase>) purchaseRepository.findAll(predicate);
+            List<Compra> compras = new ArrayList<>();
+            purchases.forEach(action -> {
+                compras.add(new Compra(action));
+            });
+            return ResponseEntity.ok(compras);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
+
     }
-    
+
     @GetMapping
     public ResponseEntity findAll() {
-        List<Purchase> purchases = purchaseRepository.findAll();
-        return ResponseEntity.ok(purchases);
+        try {
+            List<Purchase> purchases = purchaseRepository.findAll();
+            List<Compra> compras = new ArrayList<>();
+            purchases.forEach(action -> {
+                compras.add(new Compra(action));
+            });
+            return ResponseEntity.ok(compras);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
+
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Long id) {
-        Purchase purchase = purchaseRepository.findById(id).orElse(null);
-        return ResponseEntity.ok(purchase);
+        try {
+            Purchase purchase = purchaseRepository.findById(id).orElse(null);
+            Compra compra = new Compra(purchase);
+            return ResponseEntity.ok(compra);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
+
     }
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity remove(@PathVariable("id") Long id) {
-        purchaseRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        try {
+            purchaseRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
+
     }
 }

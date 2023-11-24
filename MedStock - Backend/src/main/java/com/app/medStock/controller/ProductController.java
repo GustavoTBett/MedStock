@@ -1,7 +1,7 @@
 package com.app.medStock.controller;
 
-import com.app.medStock.dto.Produto;
-import com.app.medStock.dto.ProdutoInsert;
+import com.app.medStock.dto.product.Produto;
+import com.app.medStock.dto.product.ProdutoInsert;
 import com.app.medStock.model.Product;
 import com.app.medStock.repository.ProductRepository;
 import com.querydsl.core.types.Predicate;
@@ -44,7 +44,7 @@ public class ProductController {
     }
 
     @GetMapping("/querydsl")
-    public ResponseEntity getBatch(@QuerydslPredicate(root = Produto.class) Predicate predicate) {
+    public ResponseEntity getBatch(@QuerydslPredicate(root = Product.class) Predicate predicate) {
         try {
             List<Product> products = (List<Product>) productRepository.findAll(predicate);
             List<Produto> produtos = new ArrayList<>();
@@ -59,19 +59,36 @@ public class ProductController {
 
     @GetMapping
     public ResponseEntity findAll() {
-        List<Product> products = productRepository.findAll();
-        return ResponseEntity.ok(products);
+        try {
+            List<Product> products = productRepository.findAll();
+            List<Produto> produtos = new ArrayList<>();
+            products.forEach(action -> {
+                produtos.add(new Produto(action));
+            });
+            return ResponseEntity.ok(produtos);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Long id) {
-        Product produto = productRepository.findById(id).orElse(null);
-        return ResponseEntity.ok(produto);
+        try {
+            Product product = productRepository.findById(id).orElse(null);
+            Produto produto = new Produto(product);
+            return ResponseEntity.ok(produto);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity remove(@PathVariable("id") Long id) {
-        productRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        try {
+            productRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 }

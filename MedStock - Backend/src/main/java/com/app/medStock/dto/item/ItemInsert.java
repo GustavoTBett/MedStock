@@ -1,48 +1,44 @@
-package com.app.medStock.dto;
+package com.app.medStock.dto.item;
 
 import com.app.medStock.model.Item;
-import com.app.medStock.model.Product;
 import java.math.BigDecimal;
 
 /**
  *
  * @author gustavo
  */
-public class ItemDto extends MasterEntityDto {
-    private Product produto;
+public class ItemInsert {
+    private Long produtoId;
     private Long quantidade;
     private BigDecimal preco;
     private Double juros;
     private Double desconto;
     
-    public ItemDto(Item item) {
-        this.setId(item.getId());
-        this.setCriado(item.getCreated());
-        this.setVersao(item.getVersion());
-        this.produto = item.getProduct();
+    public ItemInsert(Item item) {
+        this.produtoId = item.getProduct().getId();
         this.quantidade = item.getQuantity();
         this.preco = item.getPrice();
         this.juros = item.getFees();
         this.desconto = item.getDiscount();
     }
 
-    public ItemDto() {
+    public ItemInsert() {
     }
 
-    public ItemDto(Product produto, Long quantidade, BigDecimal preco, Double juros, Double desconto) {
-        this.produto = produto;
+    public ItemInsert(Long produtoId, Long quantidade, BigDecimal preco, Double juros, Double desconto) {
+        this.produtoId = produtoId;
         this.quantidade = quantidade;
         this.preco = preco;
         this.juros = juros;
         this.desconto = desconto;
     }
 
-    public Product getProduto() {
-        return produto;
+    public Long getProdutoId() {
+        return produtoId;
     }
 
-    public void setProduto(Product produto) {
-        this.produto = produto;
+    public void setProdutoId(Long produtoId) {
+        this.produtoId = produtoId;
     }
 
     public Long getQuantidade() {
@@ -76,6 +72,6 @@ public class ItemDto extends MasterEntityDto {
     public void setDesconto(Double desconto) {
         this.desconto = desconto;
     }
-    
+
     
 }

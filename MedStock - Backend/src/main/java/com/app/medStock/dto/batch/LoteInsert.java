@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package com.app.medStock.dto;
+package com.app.medStock.dto.batch;
 
 import com.app.medStock.model.Batch;
 import java.time.LocalDate;

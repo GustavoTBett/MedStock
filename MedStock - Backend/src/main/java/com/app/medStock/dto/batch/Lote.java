@@ -1,5 +1,7 @@
-package com.app.medStock.dto;
+package com.app.medStock.dto.batch;
 
+import com.app.medStock.dto.MasterEntityDto;
+import com.app.medStock.dto.product.Produto;
 import com.app.medStock.model.Batch;
 import java.time.LocalDate;
 
@@ -11,7 +13,7 @@ public class Lote extends MasterEntityDto{
     private Long numero;
     private LocalDate dataFabricacao;
     private LocalDate dataValidade;
-    private Long produtoId;
+    private Produto produto;
     
     public Lote(Batch batch) {
         this.setId(batch.getId());
@@ -20,17 +22,17 @@ public class Lote extends MasterEntityDto{
         this.numero = batch.getNumber();
         this.dataFabricacao = batch.getFabricationDate();
         this.dataValidade = batch.getValidDate();
-        this.produtoId = batch.getProduct().getId();
+        this.produto = new Produto(batch.getProduct());
     }
 
     public Lote() {
     }
 
-    public Lote(Long numero, LocalDate dataFabricacao, LocalDate dataValidade, Long produtoId) {
+    public Lote(Long numero, LocalDate dataFabricacao, LocalDate dataValidade, Produto produto) {
         this.numero = numero;
         this.dataFabricacao = dataFabricacao;
         this.dataValidade = dataValidade;
-        this.produtoId = produtoId;
+        this.produto = produto;
     }
 
     public Long getNumero() {
@@ -57,12 +59,12 @@ public class Lote extends MasterEntityDto{
         this.dataValidade = dataValidade;
     }
 
-    public Long getProdutoId() {
-        return produtoId;
+    public Produto getProduto() {
+        return produto;
     }
 
-    public void setProdutoId(Long produtoId) {
-        this.produtoId = produtoId;
+    public void setProduto(Produto produto) {
+        this.produto = produto;
     }
 
     

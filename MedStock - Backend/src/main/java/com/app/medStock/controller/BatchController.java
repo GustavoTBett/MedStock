@@ -1,19 +1,21 @@
 package com.app.medStock.controller;
 
-import com.app.medStock.dto.Estoque;
-import com.app.medStock.dto.LoteInsert;
-import com.app.medStock.dto.Lote;
+import com.app.medStock.dto.batch.LoteInsert;
+import com.app.medStock.dto.batch.Lote;
 import com.app.medStock.model.Batch;
 import com.app.medStock.model.Product;
+import com.app.medStock.model.QBatch;
 import com.app.medStock.repository.BatchRepository;
 import com.app.medStock.repository.ProductRepository;
 import com.app.medStock.service.BatchService;
 import com.querydsl.core.types.Predicate;
+import com.querydsl.core.types.dsl.NumberPath;
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
+import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -57,7 +59,7 @@ public class BatchController {
     }
 
     @GetMapping("/querydsl")
-    public ResponseEntity getBatch(@QuerydslPredicate(root = Lote.class) Predicate predicate) {
+    public ResponseEntity getBatch(@QuerydslPredicate(root = Batch.class) Predicate predicate) {
         try {
             List<Batch> batch = (List<Batch>) batchRepository.findAll(predicate);
             List<Lote> lotes = new ArrayList<>();

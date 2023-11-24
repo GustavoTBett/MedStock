@@ -1,13 +1,16 @@
 package com.app.medStock.controller;
 
+import com.app.medStock.dto.client.Cliente;
+import com.app.medStock.dto.client.ClienteInsert;
 import com.app.medStock.model.Client;
-import com.app.medStock.model.Employee;
 import com.app.medStock.repository.ClientRepository;
 import com.querydsl.core.types.Predicate;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,37 +27,68 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/client")
 public class ClientController {
-    
+
     @Autowired
     private ClientRepository clientRepository;
-    
+
     @PostMapping
-    public ResponseEntity create(@RequestBody Client entity) {
-        Client save = clientRepository.save(entity);
-        return ResponseEntity.created(URI.create("api/client/" + entity.getId())).body(save);
+    public ResponseEntity create(@RequestBody ClienteInsert entity) {
+        try {
+            Client client = new Client(entity.getNome(), entity.getEmail(), entity.getTelefone(), entity.getCpf(), entity.getCep(), entity.getEndereco(), entity.getEstado());
+            client = clientRepository.save(client);
+            Cliente cliente = new Cliente(client);
+            return ResponseEntity.created(URI.create("api/client/" + cliente.getId())).body(cliente);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
-    
+
     @GetMapping("/querydsl")
     public ResponseEntity getBatch(@QuerydslPredicate(root = Client.class) Predicate predicate) {
-        List<Client> clients = (List<Client>) clientRepository.findAll(predicate);
-        return ResponseEntity.ok(clients);
+        try {
+            List<Client> clients = (List<Client>) clientRepository.findAll(predicate);
+            List<Cliente> clientes = new ArrayList<>();
+            clients.forEach(action -> {
+                clientes.add(new Cliente(action));
+            });
+            return ResponseEntity.ok(clientes);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
-    
+
     @GetMapping
     public ResponseEntity findAll() {
-        List<Client> clients = clientRepository.findAll();
-        return ResponseEntity.ok(clients);
+        try {
+            List<Client> clients = clientRepository.findAll();
+            List<Cliente> clientes = new ArrayList<>();
+            clients.forEach(action -> {
+                clientes.add(new Cliente(action));
+            });
+            return ResponseEntity.ok(clientes);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
-    
+
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Long id) {
-        Client client = clientRepository.findById(id).orElse(null);
-        return ResponseEntity.ok(client);
+        try {
+            Client client = clientRepository.findById(id).orElse(null);
+            Cliente cliente = new Cliente(client);
+            return ResponseEntity.ok(cliente);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
-    
+
     @DeleteMapping("/{id}")
     public ResponseEntity remove(@PathVariable("id") Long id) {
-        clientRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        try {
+            clientRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 }

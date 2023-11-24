@@ -1,4 +1,4 @@
-package com.app.medStock.dto;
+package com.app.medStock.dto.product;
 
 import com.app.medStock.model.Product;
 
@@ -6,17 +6,14 @@ import com.app.medStock.model.Product;
  *
  * @author gustavo
  */
-public class Produto extends MasterEntityDto {
+public class ProdutoInsert {
     private String nome;
     private String descricao;
     private Long codigo;
     private String categoria;
     private String fabricante;
     
-    public Produto(Product product) {
-        this.setId(product.getId());
-        this.setCriado(product.getCreated());
-        this.setVersao(product.getVersion());
+    public ProdutoInsert(Product product) {
         this.nome = product.getName();
         this.descricao = product.getDescription();
         this.codigo = product.getCode();
@@ -24,10 +21,10 @@ public class Produto extends MasterEntityDto {
         this.fabricante = product.getProducer();
     }
 
-    public Produto() {
+    public ProdutoInsert() {
     }
 
-    public Produto(String nome, String descricao, Long codigo, String categoria, String fabricante) {
+    public ProdutoInsert(String nome, String descricao, Long codigo, String categoria, String fabricante) {
         this.nome = nome;
         this.descricao = descricao;
         this.codigo = codigo;

@@ -1,5 +1,6 @@
-package com.app.medStock.dto;
+package com.app.medStock.dto.purchase;
 
+import com.app.medStock.dto.MasterEntityDto;
 import com.app.medStock.enums.OrderType;
 import com.app.medStock.model.Item;
 import com.app.medStock.model.Provider;
