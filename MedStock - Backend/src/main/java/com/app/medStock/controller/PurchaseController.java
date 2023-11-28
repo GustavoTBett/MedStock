@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -54,7 +55,25 @@ public class PurchaseController {
         } catch (Exception err) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
         }
-
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity update(@PathVariable("id") Long id, @RequestBody CompraInsert entity) {
+        try {
+            Purchase purchase = purchaseRepository.findById(id).get();
+            Provider provider = providerRepository.findById(entity.getFornecedorId()).orElse(null);
+            List<Item> itens = new ArrayList<>();
+            entity.getItensId().forEach(action -> {
+                itens.add(itemRepository.findById(action).orElse(null));
+            });
+            purchase.setPurchaseDate(entity.getDataCompra());
+            purchase.setProvider(provider);
+            purchase.setItens(itens);
+            Compra compra = new Compra(purchase);
+            return ResponseEntity.ok(compra);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 
     @GetMapping("/querydsl")

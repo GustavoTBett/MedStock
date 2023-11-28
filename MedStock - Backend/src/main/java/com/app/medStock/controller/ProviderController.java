@@ -1,9 +1,7 @@
 package com.app.medStock.controller;
 
-import com.app.medStock.dto.employee.Funcionario;
 import com.app.medStock.dto.provider.Fornecedor;
 import com.app.medStock.dto.provider.FornecedorInsert;
-import com.app.medStock.enums.State;
 import com.app.medStock.model.Provider;
 import com.app.medStock.repository.ProviderRepository;
 import com.querydsl.core.types.Predicate;
@@ -18,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -43,7 +42,24 @@ public class ProviderController {
         } catch (Exception err) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
         }
-
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity update(@PathVariable("id") Long id, @RequestBody FornecedorInsert entity) {
+        try {
+            Provider provider = providerRepository.findById(id).get();
+            provider.setName(entity.getNome());
+            provider.setEmail(entity.getEmail());
+            provider.setPhone(entity.getTelefone());
+            provider.setCnpj(entity.getCnpj());
+            provider.setZipcode(entity.getCep());
+            provider.setAddress(entity.getEndereco());
+            provider.setState(entity.getEstado());
+            Fornecedor fornecedor = new Fornecedor(provider);
+            return ResponseEntity.ok(fornecedor);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 
     @GetMapping("/querydsl")

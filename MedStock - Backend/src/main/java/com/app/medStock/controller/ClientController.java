@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -38,6 +39,25 @@ public class ClientController {
             client = clientRepository.save(client);
             Cliente cliente = new Cliente(client);
             return ResponseEntity.created(URI.create("api/client/" + cliente.getId())).body(cliente);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity update(@PathVariable("id") Long id, @RequestBody ClienteInsert entity) {
+        try {
+            Client client = clientRepository.findById(id).get();
+            client.setName(entity.getNome());
+            client.setEmail(entity.getEmail());
+            client.setPhone(entity.getTelefone());
+            client.setCpf(entity.getCpf());
+            client.setZipcode(entity.getCep());
+            client.setAddress(entity.getEndereco());
+            client.setState(entity.getEstado());
+            client = clientRepository.save(client);
+            Cliente cliente = new Cliente(client);
+            return ResponseEntity.ok(cliente);
         } catch (Exception err) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
         }

@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -59,7 +60,27 @@ public class SaleController {
         } catch (Exception err) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
         }
-
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity update(@PathVariable("id") Long id, @RequestBody VendaInsert entity) {
+        try {
+            Sale sale = saleRepository.findById(id).get();
+            Client client = clientRepository.findById(entity.getClientId()).orElse(null);
+            List<Item> itens = new ArrayList<>();
+            entity.getItensId().forEach(action -> {
+                itens.add(itemRepository.findById(action).orElse(null));
+            });
+            Employee employee = employeeRepository.findById(entity.getFuncionarioId()).orElse(null);
+            sale.setSaleDate(entity.getDataVenda());
+            sale.setClient(client);
+            sale.setItens(itens);
+            sale.setEmployee(employee);
+            Venda venda = new Venda(sale);
+            return ResponseEntity.ok(venda);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 
     @GetMapping("/querydsl")
@@ -79,19 +100,37 @@ public class SaleController {
 
     @GetMapping
     public ResponseEntity findAll() {
-        List<Sale> sales = saleRepository.findAll();
-        return ResponseEntity.ok(sales);
+        try {
+            List<Sale> sales = saleRepository.findAll();
+            List<Venda> vendas = new ArrayList<>();
+            sales.forEach(action -> {
+                vendas.add(new Venda(action));
+            });
+            return ResponseEntity.ok(vendas);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Long id) {
-        Sale sale = saleRepository.findById(id).orElse(null);
-        return ResponseEntity.ok(sale);
+        try {
+            Sale sale = saleRepository.findById(id).orElse(null);
+            Venda venda = new Venda(sale);
+            return ResponseEntity.ok(venda);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity remove(@PathVariable("id") Long id) {
-        saleRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        try {
+            saleRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
+
     }
 }

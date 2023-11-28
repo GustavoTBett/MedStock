@@ -1,8 +1,6 @@
 package com.app.medStock.dto.purchase;
 
 import com.app.medStock.enums.OrderType;
-import com.app.medStock.model.Item;
-import com.app.medStock.model.Provider;
 import com.app.medStock.model.Purchase;
 import java.time.LocalDateTime;
 import java.util.List;

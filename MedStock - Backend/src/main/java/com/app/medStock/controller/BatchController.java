@@ -4,18 +4,14 @@ import com.app.medStock.dto.batch.LoteInsert;
 import com.app.medStock.dto.batch.Lote;
 import com.app.medStock.model.Batch;
 import com.app.medStock.model.Product;
-import com.app.medStock.model.QBatch;
 import com.app.medStock.repository.BatchRepository;
 import com.app.medStock.repository.ProductRepository;
 import com.app.medStock.service.BatchService;
 import com.querydsl.core.types.Predicate;
-import com.querydsl.core.types.dsl.NumberPath;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.querydsl.binding.QuerydslBinderCustomizer;
-import org.springframework.data.querydsl.binding.QuerydslBindings;
 import org.springframework.data.querydsl.binding.QuerydslPredicate;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +19,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +52,23 @@ public class BatchController {
         } catch (Exception err) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
         }
-
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity update(@PathVariable("id") Long id, @RequestBody LoteInsert entity) {
+        try {
+            Batch batch = batchRepository.findById(id).get();
+            Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
+            batch.setNumber(entity.getNumero());
+            batch.setFabricationDate(entity.getDataFabricacao());
+            batch.setValidDate(entity.getDataValidade());
+            batch.setProduct(product);
+            batch = batchRepository.save(batch);
+            Lote lote = new Lote(batch);
+            return ResponseEntity.ok(lote);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 
     @GetMapping("/querydsl")

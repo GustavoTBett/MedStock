@@ -7,7 +7,6 @@ import com.app.medStock.model.Product;
 import com.app.medStock.repository.ItemRepository;
 import com.app.medStock.repository.ProductRepository;
 import com.querydsl.core.types.Predicate;
-import java.math.BigDecimal;
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +18,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -47,7 +47,24 @@ public class ItemController {
         } catch (Exception err) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
         }
-
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity update(@PathVariable("id") Long id, @RequestBody ItemInsert entity) {
+        try {
+            Item item = itemRepository.findById(id).get();
+            Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
+            item.setProduct(product);
+            item.setQuantity(entity.getQuantidade());
+            item.setPrice(entity.getPreco());
+            item.setFees(entity.getJuros());
+            item.setDiscount(entity.getDesconto());
+            item = itemRepository.save(item);
+            ItemDto itemDto = new ItemDto(item);
+            return ResponseEntity.ok(itemDto);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 
     @GetMapping("/querydsl")

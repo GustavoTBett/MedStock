@@ -2,14 +2,10 @@ package com.app.medStock.controller;
 
 import com.app.medStock.dto.employee.Funcionario;
 import com.app.medStock.dto.employee.FuncionarioInsert;
-import com.app.medStock.enums.Functions;
-import com.app.medStock.enums.State;
 import com.app.medStock.model.Employee;
 import com.app.medStock.repository.EmployeeRepository;
 import com.querydsl.core.types.Predicate;
-import java.math.BigDecimal;
 import java.net.URI;
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +16,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -46,7 +43,28 @@ public class EmployeeController {
         } catch (Exception err) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
         }
-
+    }
+    
+    @PutMapping("/{id}")
+    public ResponseEntity update(@PathVariable("id") Long id, @RequestBody FuncionarioInsert entity) {
+        try {
+            Employee employee = employeeRepository.findById(id).get();
+            employee.setName(entity.getNome());
+            employee.setFunctions(entity.getFuncao());
+            employee.setHiringDate(entity.getDataContratacao());
+            employee.setSalary(entity.getSalario());
+            employee.setEmail(entity.getEmail());
+            employee.setPhone(entity.getTelefone());
+            employee.setCpf(entity.getCpf());
+            employee.setZipcode(entity.getCep());
+            employee.setAddress(entity.getEndereco());
+            employee.setState(entity.getEstado());
+            employee = employeeRepository.save(employee);
+            Funcionario funcionario = new Funcionario(employee);
+            return ResponseEntity.ok(funcionario);
+        } catch (Exception err) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        }
     }
 
     @GetMapping("/querydsl")
