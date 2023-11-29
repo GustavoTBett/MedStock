@@ -2,13 +2,14 @@ package com.app.medStock.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  *
  * @author gusta
  */
 @Entity
-//@Table(name = "product")
+@Table(name = "product")
 public class Product extends MasterEntity{
     @Column(name = "name")
     private String name;
@@ -20,7 +21,7 @@ public class Product extends MasterEntity{
     private String category;
     @Column(name = "producer")
     private String producer;
-
+    
     public String getName() {
         return name;
     }
