@@ -2,6 +2,9 @@ package com.app.medStock.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 /**
  *
@@ -10,13 +13,15 @@ import javax.persistence.Entity;
 @Entity
 @Table(name = "stock")
 public class Stock extends MasterEntity{
-    @Column(name = "product")
+    @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
-    @Column(name = "batch")
+    @ManyToOne
+    @JoinColumn(name = "batch_id")
     private Batch batch;
     @Column(name = "quantity")
     private Long quantity;
-
+    
     public Product getProduct() {
         return product;
     }

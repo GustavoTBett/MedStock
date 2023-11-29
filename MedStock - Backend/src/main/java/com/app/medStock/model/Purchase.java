@@ -8,20 +8,26 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 
 /**
  *
  * @author gusta
  */
 @Entity
+@Table(name = "purchase")
 public class Purchase extends MasterEntity implements FinancialOperations{
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
-    @Column(name = "provider")
+    @ManyToOne
+    @JoinColumn(name = "provider_id")
     private Provider provider;
     @Column(name = "type")
     private OrderType type = OrderType.PURCHASE;
-    @Column(name = "itens")
+    @OneToMany(mappedBy = "product")
     private List<Item> itens = new ArrayList<>();
 
     public Purchase() {
@@ -60,7 +66,7 @@ public class Purchase extends MasterEntity implements FinancialOperations{
     public void setItens(List<Item> itens) {
         this.itens = itens;
     }
-
+    
     @Override
     public LocalDateTime getOrderDate() {
         return this.purchaseDate;
@@ -75,6 +81,4 @@ public class Purchase extends MasterEntity implements FinancialOperations{
     public OrderType getOrderType() {
         return OrderType.PURCHASE;
     }
-    
-    
 }

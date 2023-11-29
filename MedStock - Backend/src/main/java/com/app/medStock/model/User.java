@@ -4,13 +4,14 @@ import com.app.medStock.enums.RoleUsers;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  *
  * @author gusta
  */
 @Entity
-@Table(name = "user")
+@Table(name = "app_user")
 public class User extends MasterEntity{
     @Column(name = "name")
     private String name;
@@ -20,7 +21,7 @@ public class User extends MasterEntity{
     private String password;
     @Column(name = "role")
     private RoleUsers role;
-
+    
     public String getName() {
         return name;
     }

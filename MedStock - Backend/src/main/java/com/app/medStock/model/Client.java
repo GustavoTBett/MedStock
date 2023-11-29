@@ -4,12 +4,14 @@ import com.app.medStock.enums.State;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.Table;
 
 /**
  *
  * @author gusta
  */
 @Entity
+@Table(name = "client")
 public class Client extends MasterEntity implements PersonalData {
     @Column(name = "name")
     private String name;
@@ -25,7 +27,7 @@ public class Client extends MasterEntity implements PersonalData {
     private String address;
     @Column(name = "state")
     private State state;
-
+    
     public Client() {
     }
 
@@ -94,6 +96,7 @@ public class Client extends MasterEntity implements PersonalData {
         this.state = state;
     }
     
+
     @Override
     public ContactInfo getPersonalInfo() {
         ContactInfo contactInfo = new ContactInfo(name, email, phone, cpf, zipcode, address, state);
