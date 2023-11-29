@@ -14,7 +14,7 @@ public class ContactInfo {
     private String zipcode;
     private String address;
     private State state;
-
+    
     public ContactInfo(String name, String email, Long phone, String document, String zipcode, String address, State state) {
         this.name = name;
         this.email = email;
@@ -80,6 +80,4 @@ public class ContactInfo {
     public void setState(State state) {
         this.state = state;
     }
-
-    
 }

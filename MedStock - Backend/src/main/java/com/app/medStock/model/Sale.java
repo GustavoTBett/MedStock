@@ -8,29 +8,39 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 
 /**
  *
  * @author gusta
  */
 @Entity
+@Table(name = "sale")
 public class Sale extends MasterEntity implements FinancialOperations{
     @Column(name = "sale_date")
     private LocalDateTime saleDate;
-    @Column(name = "client")
+    @OneToOne
+    @JoinColumn(name = "client_id")
     private Client client;
     @Column(name = "type")
     private OrderType type = OrderType.SALE;
-    @Column(name = "itens")
+    @OneToMany(mappedBy = "product")
     private List<Item> itens = new ArrayList<>();
-
+    @OneToOne
+    @JoinColumn(name = "employee_id")
+    private Employee employee;
+    
     public Sale() {
     }
 
-    public Sale(LocalDateTime purchaseDate, Client client, List<Item> itens) {
+    public Sale(LocalDateTime purchaseDate, Client client, List<Item> itens, Employee employee) {
         this.saleDate = purchaseDate;
         this.client = client;
         this.itens = itens;
+        this.employee = employee;
     }
 
     public LocalDateTime getSaleDate() {
@@ -59,6 +69,14 @@ public class Sale extends MasterEntity implements FinancialOperations{
 
     public void setItens(List<Item> itens) {
         this.itens = itens;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
+        this.employee = employee;
     }
 
     @Override

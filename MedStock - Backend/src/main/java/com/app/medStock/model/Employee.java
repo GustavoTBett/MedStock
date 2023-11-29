@@ -7,13 +7,16 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import javax.persistence.Table;
 
 /**
  *
  * @author gusta
  */
 @Entity
-public class Employee extends MasterEntity implements PersonalData{
+@Table(name = "employee")
+public class Employee extends MasterEntity implements PersonalData {
+
     @Column(name = "name")
     private String name;
     @Column(name = "functions")
@@ -130,11 +133,10 @@ public class Employee extends MasterEntity implements PersonalData{
     public void setState(State state) {
         this.state = state;
     }
-    
+
     @Override
     public ContactInfo getPersonalInfo() {
         ContactInfo contactInfo = new ContactInfo(name, email, phone, cpf, zipcode, address, state);
         return contactInfo;
     }
 }
-

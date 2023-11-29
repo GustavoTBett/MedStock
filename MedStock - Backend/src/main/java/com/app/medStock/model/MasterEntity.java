@@ -8,19 +8,21 @@ import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
 import javax.persistence.Version;
 
 /**
  *
  * @author gusta
  */
-//@MappedSuperclass
+@MappedSuperclass
 public abstract class MasterEntity implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(updatable = false, insertable = false)
+    @Column
     private LocalDateTime created;
     
     @Version
@@ -44,6 +46,12 @@ public abstract class MasterEntity implements Serializable {
 
     public int getVersion() {
         return version;
+    }
+    
+    //Faz com que todo insert ou update em alguma linha em banco vai alterar a coluna de created pegando o tempo atual da jvm
+    @PrePersist
+    public void prePersist() {
+        this.created = LocalDateTime.now();
     }
 
     @Override
