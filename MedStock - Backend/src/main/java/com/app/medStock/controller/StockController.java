@@ -1,5 +1,6 @@
 package com.app.medStock.controller;
 
+import com.app.medStock.RequestRateLimiter;
 import com.app.medStock.dto.stock.Estoque;
 import com.app.medStock.dto.stock.EstoqueInsert;
 import com.app.medStock.model.Batch;
@@ -42,85 +43,109 @@ public class StockController {
     @Autowired
     private BatchRepository batchRepository;
 
+    @Autowired
+    private RequestRateLimiter rateLimiter;
+
     @PostMapping
     public ResponseEntity create(@RequestBody EstoqueInsert entity) {
-        try {
-            Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
-            Batch batch = batchRepository.findById(entity.getLoteId()).orElse(null);
-            Stock save = new Stock(product, batch, entity.getQuantidade());
-            save = stockRepository.save(save);
-            Estoque estoque = new Estoque(save);
-            return ResponseEntity.created(URI.create("api/stock/" + estoque.getId())).body(estoque);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
+                Batch batch = batchRepository.findById(entity.getLoteId()).orElse(null);
+                Stock save = new Stock(product, batch, entity.getQuantidade());
+                save = stockRepository.save(save);
+                Estoque estoque = new Estoque(save);
+                return ResponseEntity.created(URI.create("api/stock/" + estoque.getId())).body(estoque);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
-    
+
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable("id") Long id, @RequestBody EstoqueInsert entity) {
-        try {
-            Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
-            Batch batch = batchRepository.findById(entity.getLoteId()).orElse(null);
-            Stock stock = stockRepository.findById(id).get();
-            stock.setProduct(product);
-            stock.setBatch(batch);
-            stock.setQuantity(entity.getQuantidade());
-            Estoque estoque = new Estoque(stock);
-            return ResponseEntity.ok(estoque);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
+                Batch batch = batchRepository.findById(entity.getLoteId()).orElse(null);
+                Stock stock = stockRepository.findById(id).get();
+                stock.setProduct(product);
+                stock.setBatch(batch);
+                stock.setQuantity(entity.getQuantidade());
+                Estoque estoque = new Estoque(stock);
+                return ResponseEntity.ok(estoque);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
 
     @GetMapping("/querydsl")
     public ResponseEntity getBatch(@QuerydslPredicate(root = Stock.class) Predicate predicate) {
-        try {
-            List<Stock> stock = (List<Stock>) stockRepository.findAll(predicate);
-            List<Estoque> estoques = new ArrayList<>();
-            stock.forEach(action -> {
-                estoques.add(new Estoque(action));
-            });
-            return ResponseEntity.ok(estoques);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                List<Stock> stock = (List<Stock>) stockRepository.findAll(predicate);
+                List<Estoque> estoques = new ArrayList<>();
+                stock.forEach(action -> {
+                    estoques.add(new Estoque(action));
+                });
+                return ResponseEntity.ok(estoques);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 
     @GetMapping
     public ResponseEntity findAll() {
-        try {
-            List<Stock> stock = (List<Stock>) stockRepository.findAll();
-            List<Estoque> estoques = new ArrayList<>();
-            stock.forEach(action -> {
-                estoques.add(new Estoque(action));
-            });
-            return ResponseEntity.ok(estoques);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                List<Stock> stock = (List<Stock>) stockRepository.findAll();
+                List<Estoque> estoques = new ArrayList<>();
+                stock.forEach(action -> {
+                    estoques.add(new Estoque(action));
+                });
+                return ResponseEntity.ok(estoques);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Long id) {
-        try {
-            Stock stock = stockRepository.findById(id).orElse(null);
-            Estoque estoque = new Estoque(stock);
-            return ResponseEntity.ok(estoque);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Stock stock = stockRepository.findById(id).orElse(null);
+                Estoque estoque = new Estoque(stock);
+                return ResponseEntity.ok(estoque);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity remove(@PathVariable("id") Long id) {
-        try {
-            stockRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                stockRepository.deleteById(id);
+                return ResponseEntity.noContent().build();
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 }

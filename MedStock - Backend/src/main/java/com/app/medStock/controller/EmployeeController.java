@@ -1,5 +1,6 @@
 package com.app.medStock.controller;
 
+import com.app.medStock.RequestRateLimiter;
 import com.app.medStock.dto.employee.Funcionario;
 import com.app.medStock.dto.employee.FuncionarioInsert;
 import com.app.medStock.model.Employee;
@@ -32,90 +33,114 @@ public class EmployeeController {
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private RequestRateLimiter rateLimiter;
+
     @PostMapping
     public ResponseEntity create(@RequestBody FuncionarioInsert entity) {
-        try {
-            Employee employee = new Employee(entity.getNome(), entity.getFuncao(), entity.getDataContratacao(), entity.getSalario(), entity.getEmail(),
-                    entity.getTelefone(), entity.getCpf(), entity.getCep(), entity.getEndereco(), entity.getEstado());
-            employee = employeeRepository.save(employee);
-            Funcionario funcionario = new Funcionario(employee);
-            return ResponseEntity.created(URI.create("api/employee/" + funcionario.getId())).body(funcionario);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Employee employee = new Employee(entity.getNome(), entity.getFuncao(), entity.getDataContratacao(), entity.getSalario(), entity.getEmail(),
+                        entity.getTelefone(), entity.getCpf(), entity.getCep(), entity.getEndereco(), entity.getEstado());
+                employee = employeeRepository.save(employee);
+                Funcionario funcionario = new Funcionario(employee);
+                return ResponseEntity.created(URI.create("api/employee/" + funcionario.getId())).body(funcionario);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
-    
+
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable("id") Long id, @RequestBody FuncionarioInsert entity) {
-        try {
-            Employee employee = employeeRepository.findById(id).get();
-            employee.setName(entity.getNome());
-            employee.setFunctions(entity.getFuncao());
-            employee.setHiringDate(entity.getDataContratacao());
-            employee.setSalary(entity.getSalario());
-            employee.setEmail(entity.getEmail());
-            employee.setPhone(entity.getTelefone());
-            employee.setCpf(entity.getCpf());
-            employee.setZipcode(entity.getCep());
-            employee.setAddress(entity.getEndereco());
-            employee.setState(entity.getEstado());
-            employee = employeeRepository.save(employee);
-            Funcionario funcionario = new Funcionario(employee);
-            return ResponseEntity.ok(funcionario);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Employee employee = employeeRepository.findById(id).get();
+                employee.setName(entity.getNome());
+                employee.setFunctions(entity.getFuncao());
+                employee.setHiringDate(entity.getDataContratacao());
+                employee.setSalary(entity.getSalario());
+                employee.setEmail(entity.getEmail());
+                employee.setPhone(entity.getTelefone());
+                employee.setCpf(entity.getCpf());
+                employee.setZipcode(entity.getCep());
+                employee.setAddress(entity.getEndereco());
+                employee.setState(entity.getEstado());
+                employee = employeeRepository.save(employee);
+                Funcionario funcionario = new Funcionario(employee);
+                return ResponseEntity.ok(funcionario);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
 
     @GetMapping("/querydsl")
     public ResponseEntity getBatch(@QuerydslPredicate(root = Employee.class) Predicate predicate) {
-        try {
-            List<Employee> employees = (List<Employee>) employeeRepository.findAll(predicate);
-            List<Funcionario> funcionarios = new ArrayList<>();
-            employees.forEach(action -> {
-                funcionarios.add(new Funcionario(action));
-            });
-            return ResponseEntity.ok(funcionarios);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                List<Employee> employees = (List<Employee>) employeeRepository.findAll(predicate);
+                List<Funcionario> funcionarios = new ArrayList<>();
+                employees.forEach(action -> {
+                    funcionarios.add(new Funcionario(action));
+                });
+                return ResponseEntity.ok(funcionarios);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
 
     @GetMapping
     public ResponseEntity findAll() {
-        try {
-            List<Employee> employees = employeeRepository.findAll();
-            List<Funcionario> funcionarios = new ArrayList<>();
-            employees.forEach(action -> {
-                funcionarios.add(new Funcionario(action));
-            });
-            return ResponseEntity.ok(funcionarios);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                List<Employee> employees = employeeRepository.findAll();
+                List<Funcionario> funcionarios = new ArrayList<>();
+                employees.forEach(action -> {
+                    funcionarios.add(new Funcionario(action));
+                });
+                return ResponseEntity.ok(funcionarios);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Long id) {
-        try {
-            Employee employee = employeeRepository.findById(id).orElse(null);
-            Funcionario funcionario = new Funcionario(employee);
-            return ResponseEntity.ok(funcionario);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Employee employee = employeeRepository.findById(id).orElse(null);
+                Funcionario funcionario = new Funcionario(employee);
+                return ResponseEntity.ok(funcionario);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity remove(@PathVariable("id") Long id) {
-        try {
-            employeeRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                employeeRepository.deleteById(id);
+                return ResponseEntity.noContent().build();
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 }

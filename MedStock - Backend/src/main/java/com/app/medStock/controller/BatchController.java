@@ -1,5 +1,6 @@
 package com.app.medStock.controller;
 
+import com.app.medStock.RequestRateLimiter;
 import com.app.medStock.dto.batch.LoteInsert;
 import com.app.medStock.dto.batch.Lote;
 import com.app.medStock.model.Batch;
@@ -41,69 +42,99 @@ public class BatchController {
     @Autowired
     private ProductRepository productRepository;
 
+    @Autowired
+    private RequestRateLimiter rateLimiter;
+
     @PostMapping
     public ResponseEntity create(@RequestBody LoteInsert entity) {
-        try {
-            Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
-            Batch batch = new Batch(entity.getNumero(), entity.getDataFabricacao(), entity.getDataValidade(), product);
-            batch = batchRepository.save(batch);
-            Lote loteInsert = new Lote(batch);
-            return ResponseEntity.created(URI.create("api/batch/" + loteInsert.getId())).body(loteInsert);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
+                Batch batch = new Batch(entity.getNumero(), entity.getDataFabricacao(), entity.getDataValidade(), product);
+                batch = batchRepository.save(batch);
+                Lote loteInsert = new Lote(batch);
+                return ResponseEntity.created(URI.create("api/batch/" + loteInsert.getId())).body(loteInsert);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
-    
+
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable("id") Long id, @RequestBody LoteInsert entity) {
-        try {
-            Batch batch = batchRepository.findById(id).get();
-            Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
-            batch.setNumber(entity.getNumero());
-            batch.setFabricationDate(entity.getDataFabricacao());
-            batch.setValidDate(entity.getDataValidade());
-            batch.setProduct(product);
-            batch = batchRepository.save(batch);
-            Lote lote = new Lote(batch);
-            return ResponseEntity.ok(lote);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Batch batch = batchRepository.findById(id).get();
+                Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
+                batch.setNumber(entity.getNumero());
+                batch.setFabricationDate(entity.getDataFabricacao());
+                batch.setValidDate(entity.getDataValidade());
+                batch.setProduct(product);
+                batch = batchRepository.save(batch);
+                Lote lote = new Lote(batch);
+                return ResponseEntity.ok(lote);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
+
     }
 
     @GetMapping("/querydsl")
     public ResponseEntity getBatch(@QuerydslPredicate(root = Batch.class) Predicate predicate) {
-        try {
-            List<Batch> batch = (List<Batch>) batchRepository.findAll(predicate);
-            List<Lote> lotes = new ArrayList<>();
-            batch.forEach(action -> {
-                lotes.add(new Lote(action));
-            });
-            return ResponseEntity.ok(lotes);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                List<Batch> batch = (List<Batch>) batchRepository.findAll(predicate);
+                List<Lote> lotes = new ArrayList<>();
+                batch.forEach(action -> {
+                    lotes.add(new Lote(action));
+                });
+                return ResponseEntity.ok(lotes);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Too many requests");
         }
+
     }
 
     @GetMapping
     public ResponseEntity findAll() {
-        List<Batch> batchs = batchRepository.findAll();
-        List<Lote> lotes = new ArrayList<>();
-        batchs.forEach(action -> {
-            lotes.add(new Lote(action));
-        });
-        return ResponseEntity.ok(lotes);
+        if (rateLimiter.tryAcquire()) {
+            List<Batch> batchs = batchRepository.findAll();
+            List<Lote> lotes = new ArrayList<>();
+            batchs.forEach(action -> {
+                lotes.add(new Lote(action));
+            });
+            return ResponseEntity.ok(lotes);
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
+        }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Long id) {
-        Batch batch = batchService.findById(id);
-        return ResponseEntity.ok(new Lote(batch));
+        if (rateLimiter.tryAcquire()) {
+            Batch batch = batchService.findById(id);
+            return ResponseEntity.ok(new Lote(batch));
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
+        }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity remove(@PathVariable("id") Long id) {
-        batchRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+        if (rateLimiter.tryAcquire()) {
+            batchRepository.deleteById(id);
+            return ResponseEntity.noContent().build();
+
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
+        }
     }
 }

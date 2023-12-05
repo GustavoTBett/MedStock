@@ -1,5 +1,6 @@
 package com.app.medStock.controller;
 
+import com.app.medStock.RequestRateLimiter;
 import com.app.medStock.dto.sale.Venda;
 import com.app.medStock.dto.sale.VendaInsert;
 import com.app.medStock.model.Client;
@@ -37,100 +38,128 @@ public class SaleController {
 
     @Autowired
     private SaleRepository saleRepository;
+
     @Autowired
     private ClientRepository clientRepository;
+
     @Autowired
     private ItemRepository itemRepository;
+
     @Autowired
     private EmployeeRepository employeeRepository;
 
+    @Autowired
+    private RequestRateLimiter rateLimiter;
+
     @PostMapping
     public ResponseEntity create(@RequestBody VendaInsert entity) {
-        try {
-            Client client = clientRepository.findById(entity.getClientId()).orElse(null);
-            List<Item> itens = new ArrayList<>();
-            entity.getItensId().forEach(action -> {
-                itens.add(itemRepository.findById(action).orElse(null));
-            });
-            Employee employee = employeeRepository.findById(entity.getFuncionarioId()).orElse(null);
-            Sale sale = new Sale(entity.getDataVenda(), client, itens, employee);
-            sale = saleRepository.save(sale);
-            Venda venda = new Venda(sale);
-            return ResponseEntity.created(URI.create("api/sale/" + venda.getId())).body(venda);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Client client = clientRepository.findById(entity.getClientId()).orElse(null);
+                List<Item> itens = new ArrayList<>();
+                entity.getItensId().forEach(action -> {
+                    itens.add(itemRepository.findById(action).orElse(null));
+                });
+                Employee employee = employeeRepository.findById(entity.getFuncionarioId()).orElse(null);
+                Sale sale = new Sale(entity.getDataVenda(), client, itens, employee);
+                sale = saleRepository.save(sale);
+                Venda venda = new Venda(sale);
+                return ResponseEntity.created(URI.create("api/sale/" + venda.getId())).body(venda);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
-    
+
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable("id") Long id, @RequestBody VendaInsert entity) {
-        try {
-            Sale sale = saleRepository.findById(id).get();
-            Client client = clientRepository.findById(entity.getClientId()).orElse(null);
-            List<Item> itens = new ArrayList<>();
-            entity.getItensId().forEach(action -> {
-                itens.add(itemRepository.findById(action).orElse(null));
-            });
-            Employee employee = employeeRepository.findById(entity.getFuncionarioId()).orElse(null);
-            sale.setSaleDate(entity.getDataVenda());
-            sale.setClient(client);
-            sale.setItens(itens);
-            sale.setEmployee(employee);
-            Venda venda = new Venda(sale);
-            return ResponseEntity.ok(venda);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Sale sale = saleRepository.findById(id).get();
+                Client client = clientRepository.findById(entity.getClientId()).orElse(null);
+                List<Item> itens = new ArrayList<>();
+                entity.getItensId().forEach(action -> {
+                    itens.add(itemRepository.findById(action).orElse(null));
+                });
+                Employee employee = employeeRepository.findById(entity.getFuncionarioId()).orElse(null);
+                sale.setSaleDate(entity.getDataVenda());
+                sale.setClient(client);
+                sale.setItens(itens);
+                sale.setEmployee(employee);
+                Venda venda = new Venda(sale);
+                return ResponseEntity.ok(venda);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
 
     @GetMapping("/querydsl")
     public ResponseEntity getBatch(@QuerydslPredicate(root = Sale.class) Predicate predicate) {
-        try {
-            List<Sale> sales = (List<Sale>) saleRepository.findAll(predicate);
-            List<Venda> vendas = new ArrayList<>();
-            sales.forEach(action -> {
-                vendas.add(new Venda(action));
-            });
-            return ResponseEntity.ok(sales);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                List<Sale> sales = (List<Sale>) saleRepository.findAll(predicate);
+                List<Venda> vendas = new ArrayList<>();
+                sales.forEach(action -> {
+                    vendas.add(new Venda(action));
+                });
+                return ResponseEntity.ok(sales);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 
     @GetMapping
     public ResponseEntity findAll() {
-        try {
-            List<Sale> sales = saleRepository.findAll();
-            List<Venda> vendas = new ArrayList<>();
-            sales.forEach(action -> {
-                vendas.add(new Venda(action));
-            });
-            return ResponseEntity.ok(vendas);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                List<Sale> sales = saleRepository.findAll();
+                List<Venda> vendas = new ArrayList<>();
+                sales.forEach(action -> {
+                    vendas.add(new Venda(action));
+                });
+                return ResponseEntity.ok(vendas);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
 
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Long id) {
-        try {
-            Sale sale = saleRepository.findById(id).orElse(null);
-            Venda venda = new Venda(sale);
-            return ResponseEntity.ok(venda);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Sale sale = saleRepository.findById(id).orElse(null);
+                Venda venda = new Venda(sale);
+                return ResponseEntity.ok(venda);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity remove(@PathVariable("id") Long id) {
-        try {
-            saleRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                saleRepository.deleteById(id);
+                return ResponseEntity.noContent().build();
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 }

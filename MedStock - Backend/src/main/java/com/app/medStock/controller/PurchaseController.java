@@ -1,5 +1,6 @@
 package com.app.medStock.controller;
 
+import com.app.medStock.RequestRateLimiter;
 import com.app.medStock.dto.purchase.Compra;
 import com.app.medStock.dto.purchase.CompraInsert;
 import com.app.medStock.model.Item;
@@ -35,97 +36,122 @@ public class PurchaseController {
 
     @Autowired
     private PurchaseRepository purchaseRepository;
+
     @Autowired
     private ProviderRepository providerRepository;
+
     @Autowired
     private ItemRepository itemRepository;
 
+    @Autowired
+    private RequestRateLimiter rateLimiter;
+
     @PostMapping
     public ResponseEntity create(@RequestBody CompraInsert entity) {
-        try {
-            Provider provider = providerRepository.findById(entity.getFornecedorId()).orElse(null);
-            List<Item> itens = new ArrayList<>();
-            entity.getItensId().forEach(action -> {
-                itens.add(itemRepository.findById(action).orElse(null));
-            });
-            Purchase purchase = new Purchase(entity.getDataCompra(), provider, itens);
-            purchase = purchaseRepository.save(purchase);
-            Compra compra = new Compra(purchase);
-            return ResponseEntity.created(URI.create("api/purchase/" + compra.getId())).body(compra);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Provider provider = providerRepository.findById(entity.getFornecedorId()).orElse(null);
+                List<Item> itens = new ArrayList<>();
+                entity.getItensId().forEach(action -> {
+                    itens.add(itemRepository.findById(action).orElse(null));
+                });
+                Purchase purchase = new Purchase(entity.getDataCompra(), provider, itens);
+                purchase = purchaseRepository.save(purchase);
+                Compra compra = new Compra(purchase);
+                return ResponseEntity.created(URI.create("api/purchase/" + compra.getId())).body(compra);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
-    
+
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable("id") Long id, @RequestBody CompraInsert entity) {
-        try {
-            Purchase purchase = purchaseRepository.findById(id).get();
-            Provider provider = providerRepository.findById(entity.getFornecedorId()).orElse(null);
-            List<Item> itens = new ArrayList<>();
-            entity.getItensId().forEach(action -> {
-                itens.add(itemRepository.findById(action).orElse(null));
-            });
-            purchase.setPurchaseDate(entity.getDataCompra());
-            purchase.setProvider(provider);
-            purchase.setItens(itens);
-            Compra compra = new Compra(purchase);
-            return ResponseEntity.ok(compra);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Purchase purchase = purchaseRepository.findById(id).get();
+                Provider provider = providerRepository.findById(entity.getFornecedorId()).orElse(null);
+                List<Item> itens = new ArrayList<>();
+                entity.getItensId().forEach(action -> {
+                    itens.add(itemRepository.findById(action).orElse(null));
+                });
+                purchase.setPurchaseDate(entity.getDataCompra());
+                purchase.setProvider(provider);
+                purchase.setItens(itens);
+                Compra compra = new Compra(purchase);
+                return ResponseEntity.ok(compra);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
     }
 
     @GetMapping("/querydsl")
     public ResponseEntity getBatch(@QuerydslPredicate(root = Purchase.class) Predicate predicate) {
-        try {
-            List<Purchase> purchases = (List<Purchase>) purchaseRepository.findAll(predicate);
-            List<Compra> compras = new ArrayList<>();
-            purchases.forEach(action -> {
-                compras.add(new Compra(action));
-            });
-            return ResponseEntity.ok(compras);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                List<Purchase> purchases = (List<Purchase>) purchaseRepository.findAll(predicate);
+                List<Compra> compras = new ArrayList<>();
+                purchases.forEach(action -> {
+                    compras.add(new Compra(action));
+                });
+                return ResponseEntity.ok(compras);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 
     @GetMapping
     public ResponseEntity findAll() {
-        try {
-            List<Purchase> purchases = purchaseRepository.findAll();
-            List<Compra> compras = new ArrayList<>();
-            purchases.forEach(action -> {
-                compras.add(new Compra(action));
-            });
-            return ResponseEntity.ok(compras);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                List<Purchase> purchases = purchaseRepository.findAll();
+                List<Compra> compras = new ArrayList<>();
+                purchases.forEach(action -> {
+                    compras.add(new Compra(action));
+                });
+                return ResponseEntity.ok(compras);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Long id) {
-        try {
-            Purchase purchase = purchaseRepository.findById(id).orElse(null);
-            Compra compra = new Compra(purchase);
-            return ResponseEntity.ok(compra);
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                Purchase purchase = purchaseRepository.findById(id).orElse(null);
+                Compra compra = new Compra(purchase);
+                return ResponseEntity.ok(compra);
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity remove(@PathVariable("id") Long id) {
-        try {
-            purchaseRepository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        } catch (Exception err) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+        if (rateLimiter.tryAcquire()) {
+            try {
+                purchaseRepository.deleteById(id);
+                return ResponseEntity.noContent().build();
+            } catch (Exception err) {
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
+            }
+        } else {
+            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
         }
-
     }
 }
