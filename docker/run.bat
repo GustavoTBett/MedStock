@@ -1,3 +1,3 @@
-cd C:\Users\gusta\OneDrive\Documentos\NetBeansProjects\MedStock\docker
+cd C:\Users\User\Documents\Dev\api-medstock\MedStock\docker
 docker compose up -d
 pause
