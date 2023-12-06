@@ -11,6 +11,7 @@ import com.app.medStock.repository.ClientRepository;
 import com.app.medStock.repository.EmployeeRepository;
 import com.app.medStock.repository.ItemRepository;
 import com.app.medStock.repository.SaleRepository;
+import com.app.medStock.service.ItemService;
 import com.querydsl.core.types.Predicate;
 import java.net.URI;
 import java.util.ArrayList;
@@ -43,7 +44,7 @@ public class SaleController {
     private ClientRepository clientRepository;
 
     @Autowired
-    private ItemRepository itemRepository;
+    private ItemService itemService;
 
     @Autowired
     private EmployeeRepository employeeRepository;
@@ -58,7 +59,7 @@ public class SaleController {
                 Client client = clientRepository.findById(entity.getClientId()).orElse(null);
                 List<Item> itens = new ArrayList<>();
                 entity.getItensId().forEach(action -> {
-                    itens.add(itemRepository.findById(action).orElse(null));
+                    itens.add(itemService.findByItemWithQuantity(action));
                 });
                 Employee employee = employeeRepository.findById(entity.getFuncionarioId()).orElse(null);
                 Sale sale = new Sale(entity.getDataVenda(), client, itens, employee);
@@ -81,7 +82,7 @@ public class SaleController {
                 Client client = clientRepository.findById(entity.getClientId()).orElse(null);
                 List<Item> itens = new ArrayList<>();
                 entity.getItensId().forEach(action -> {
-                    itens.add(itemRepository.findById(action).orElse(null));
+                    itens.add(itemService.findByItemWithQuantity(action));
                 });
                 Employee employee = employeeRepository.findById(entity.getFuncionarioId()).orElse(null);
                 sale.setSaleDate(entity.getDataVenda());
