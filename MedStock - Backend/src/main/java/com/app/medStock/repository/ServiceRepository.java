@@ -9,6 +9,6 @@ import org.springframework.stereotype.Repository;
  * @author gustavo
  */
 @Repository
-public interface ServiceRepository extends JpaRepository<Service, Long>, CustomQuerydslPredicateExecutor<Service> {
+public interface ServiceRepository extends JpaRepository<Service, Long> {
     
 }

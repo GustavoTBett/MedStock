@@ -5,22 +5,19 @@ import com.app.medStock.dto.employee.Funcionario;
 import com.app.medStock.dto.employee.FuncionarioInsert;
 import com.app.medStock.model.Employee;
 import com.app.medStock.repository.EmployeeRepository;
-import com.querydsl.core.types.Predicate;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.querydsl.binding.QuerydslPredicate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
@@ -37,6 +34,13 @@ public class EmployeeController {
     private RequestRateLimiter rateLimiter;
 
     @PostMapping
+    @Operation(summary = "Criar funcionário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Funcionário criado com sucesso!",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Funcionario.class))}),
+            @ApiResponse(responseCode = "400", description = "Erro ao criar funcionário", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity create(@RequestBody FuncionarioInsert entity) {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -54,6 +58,13 @@ public class EmployeeController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar funcionário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Funcionário atualizado com sucesso!",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Funcionario.class))}),
+            @ApiResponse(responseCode = "400", description = "Erro ao atualizar funcionário", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity update(@PathVariable("id") Long id, @RequestBody FuncionarioInsert entity) {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -79,25 +90,13 @@ public class EmployeeController {
         }
     }
 
-    @GetMapping("/querydsl")
-    public ResponseEntity getBatch(@QuerydslPredicate(root = Employee.class) Predicate predicate) {
-        if (rateLimiter.tryAcquire()) {
-            try {
-                List<Employee> employees = (List<Employee>) employeeRepository.findAll(predicate);
-                List<Funcionario> funcionarios = new ArrayList<>();
-                employees.forEach(action -> {
-                    funcionarios.add(new Funcionario(action));
-                });
-                return ResponseEntity.ok(funcionarios);
-            } catch (Exception err) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
-            }
-        } else {
-            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
-        }
-    }
-
     @GetMapping
+    @Operation(summary = "Listar todos os funcionários")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de funcionários",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Funcionario.class))}),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity findAll() {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -116,6 +115,13 @@ public class EmployeeController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar funcionário por ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Funcionário encontrado",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Funcionario.class))}),
+            @ApiResponse(responseCode = "404", description = "Funcionário não encontrado", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity findById(@PathVariable("id") Long id) {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -131,6 +137,12 @@ public class EmployeeController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Remover funcionário")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Funcionário removido com sucesso!", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Funcionário não encontrado", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity remove(@PathVariable("id") Long id) {
         if (rateLimiter.tryAcquire()) {
             try {

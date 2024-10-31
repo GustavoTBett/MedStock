@@ -5,22 +5,19 @@ import com.app.medStock.dto.product.Produto;
 import com.app.medStock.dto.product.ProdutoInsert;
 import com.app.medStock.model.Product;
 import com.app.medStock.repository.ProductRepository;
-import com.querydsl.core.types.Predicate;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.querydsl.binding.QuerydslPredicate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
@@ -37,6 +34,13 @@ public class ProductController {
     private RequestRateLimiter rateLimiter;
 
     @PostMapping
+    @Operation(summary = "Criar produto")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Produto criado com sucesso!",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Produto.class))}),
+            @ApiResponse(responseCode = "400", description = "Erro ao criar produto", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity create(@RequestBody ProdutoInsert entity) {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -53,6 +57,13 @@ public class ProductController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar produto")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Produto atualizado com sucesso!",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Produto.class))}),
+            @ApiResponse(responseCode = "400", description = "Erro ao atualizar produto", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity update(@PathVariable("id") Long id, @RequestBody ProdutoInsert entity) {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -73,25 +84,13 @@ public class ProductController {
         }
     }
 
-    @GetMapping("/querydsl")
-    public ResponseEntity getBatch(@QuerydslPredicate(root = Product.class) Predicate predicate) {
-        if (rateLimiter.tryAcquire()) {
-            try {
-                List<Product> products = (List<Product>) productRepository.findAll(predicate);
-                List<Produto> produtos = new ArrayList<>();
-                products.forEach(action -> {
-                    produtos.add(new Produto(action));
-                });
-                return ResponseEntity.ok(products);
-            } catch (Exception err) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
-            }
-        } else {
-            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
-        }
-    }
-
     @GetMapping
+    @Operation(summary = "Listar todos os produtos")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de produtos",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Produto.class))}),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity findAll() {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -110,6 +109,13 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar produto por ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Produto encontrado",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Produto.class))}),
+            @ApiResponse(responseCode = "404", description = "Produto não encontrado", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity findById(@PathVariable("id") Long id) {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -125,6 +131,12 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Remover produto")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Produto removido com sucesso!", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Produto não encontrado", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity remove(@PathVariable("id") Long id) {
         if (rateLimiter.tryAcquire()) {
             try {

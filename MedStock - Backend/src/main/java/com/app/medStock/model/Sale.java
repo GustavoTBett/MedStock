@@ -1,17 +1,12 @@
 package com.app.medStock.model;
 
 import com.app.medStock.enums.OrderType;
+import jakarta.persistence.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 /**
  *
@@ -19,7 +14,7 @@ import javax.persistence.Table;
  */
 @Entity
 @Table(name = "sale")
-public class Sale extends MasterEntity implements FinancialOperations{
+public class Sale extends MasterEntity implements FinancialOperations {
     @Column(name = "sale_date")
     private LocalDateTime saleDate;
     @OneToOne
@@ -27,7 +22,7 @@ public class Sale extends MasterEntity implements FinancialOperations{
     private Client client;
     @Column(name = "type")
     private OrderType type = OrderType.SALE;
-    @OneToMany(mappedBy = "product")
+    @OneToMany
     private List<Item> itens = new ArrayList<>();
     @OneToOne
     @JoinColumn(name = "employee_id")

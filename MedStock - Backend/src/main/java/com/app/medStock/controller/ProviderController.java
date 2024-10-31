@@ -5,22 +5,19 @@ import com.app.medStock.dto.provider.Fornecedor;
 import com.app.medStock.dto.provider.FornecedorInsert;
 import com.app.medStock.model.Provider;
 import com.app.medStock.repository.ProviderRepository;
-import com.querydsl.core.types.Predicate;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.querydsl.binding.QuerydslPredicate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
@@ -37,6 +34,13 @@ public class ProviderController {
     private RequestRateLimiter rateLimiter;
 
     @PostMapping
+    @Operation(summary = "Criar fornecedor")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Fornecedor criado com sucesso!",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Fornecedor.class))}),
+            @ApiResponse(responseCode = "400", description = "Erro ao criar fornecedor", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity create(@RequestBody FornecedorInsert entity) {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -53,6 +57,13 @@ public class ProviderController {
     }
 
     @PutMapping("/{id}")
+    @Operation(summary = "Atualizar fornecedor")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Fornecedor atualizado com sucesso!",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Fornecedor.class))}),
+            @ApiResponse(responseCode = "400", description = "Erro ao atualizar fornecedor", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity update(@PathVariable("id") Long id, @RequestBody FornecedorInsert entity) {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -74,25 +85,13 @@ public class ProviderController {
         }
     }
 
-    @GetMapping("/querydsl")
-    public ResponseEntity getBatch(@QuerydslPredicate(root = Provider.class) Predicate predicate) {
-        if (rateLimiter.tryAcquire()) {
-            try {
-                List<Provider> providers = (List<Provider>) providerRepository.findAll(predicate);
-                List<Fornecedor> fornecedores = new ArrayList<>();
-                providers.forEach(action -> {
-                    fornecedores.add(new Fornecedor(action));
-                });
-                return ResponseEntity.ok(fornecedores);
-            } catch (Exception err) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
-            }
-        } else {
-            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
-        }
-    }
-
     @GetMapping
+    @Operation(summary = "Listar todos os fornecedores")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de fornecedores",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Fornecedor.class))}),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity findAll() {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -111,6 +110,13 @@ public class ProviderController {
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar fornecedor por ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Fornecedor encontrado",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Fornecedor.class))}),
+            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity findById(@PathVariable("id") Long id) {
         if (rateLimiter.tryAcquire()) {
             try {
@@ -126,6 +132,12 @@ public class ProviderController {
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Remover fornecedor")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Fornecedor removido com sucesso!", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Fornecedor não encontrado", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     public ResponseEntity remove(@PathVariable("id") Long id) {
         if (rateLimiter.tryAcquire()) {
             try {

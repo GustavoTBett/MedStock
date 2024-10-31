@@ -5,22 +5,19 @@ import com.app.medStock.dto.client.Cliente;
 import com.app.medStock.dto.client.ClienteInsert;
 import com.app.medStock.model.Client;
 import com.app.medStock.repository.ClientRepository;
-import com.querydsl.core.types.Predicate;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
 import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.querydsl.binding.QuerydslPredicate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
 /**
  *
@@ -36,6 +33,13 @@ public class ClientController {
     @Autowired
     private RequestRateLimiter rateLimiter;
 
+    @Operation(summary = "Criar cliente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Cliente criado com sucesso!",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cliente.class))}),
+            @ApiResponse(responseCode = "400", description = "Erro ao criar cliente", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     @PostMapping
     public ResponseEntity create(@RequestBody ClienteInsert entity) {
         if (rateLimiter.tryAcquire()) {
@@ -52,6 +56,13 @@ public class ClientController {
         }
     }
 
+    @Operation(summary = "Atualizar cliente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente atualizado com sucesso!",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cliente.class))}),
+            @ApiResponse(responseCode = "400", description = "Erro ao atualizar cliente", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     @PutMapping("/{id}")
     public ResponseEntity update(@PathVariable("id") Long id, @RequestBody ClienteInsert entity) {
         if (rateLimiter.tryAcquire()) {
@@ -75,24 +86,12 @@ public class ClientController {
         }
     }
 
-    @GetMapping("/querydsl")
-    public ResponseEntity getBatch(@QuerydslPredicate(root = Client.class) Predicate predicate) {
-        if (rateLimiter.tryAcquire()) {
-            try {
-                List<Client> clients = (List<Client>) clientRepository.findAll(predicate);
-                List<Cliente> clientes = new ArrayList<>();
-                clients.forEach(action -> {
-                    clientes.add(new Cliente(action));
-                });
-                return ResponseEntity.ok(clientes);
-            } catch (Exception err) {
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
-            }
-        } else {
-            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
-        }
-    }
-
+    @Operation(summary = "Listar todos os clientes")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Lista de clientes",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cliente.class))}),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     @GetMapping
     public ResponseEntity findAll() {
         if (rateLimiter.tryAcquire()) {
@@ -112,6 +111,13 @@ public class ClientController {
 
     }
 
+    @Operation(summary = "Buscar cliente por ID")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Cliente encontrado",
+                    content = {@Content(mediaType = "application/json", schema = @Schema(implementation = Cliente.class))}),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     @GetMapping("/{id}")
     public ResponseEntity findById(@PathVariable("id") Long id) {
         if (rateLimiter.tryAcquire()) {
@@ -127,6 +133,12 @@ public class ClientController {
         }
     }
 
+    @Operation(summary = "Remover cliente")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "204", description = "Cliente removido com sucesso!", content = @Content),
+            @ApiResponse(responseCode = "404", description = "Cliente não encontrado", content = @Content),
+            @ApiResponse(responseCode = "429", description = "Muitas solicitações", content = @Content)
+    })
     @DeleteMapping("/{id}")
     public ResponseEntity remove(@PathVariable("id") Long id) {
         if (rateLimiter.tryAcquire()) {

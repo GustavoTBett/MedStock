@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class RequestRateLimiter {
     
-    private final RateLimiter rateLimiter = RateLimiter.create(1.0);
+    private final RateLimiter rateLimiter = RateLimiter.create(9999d);
 
     public boolean tryAcquire() {
         return rateLimiter.tryAcquire();

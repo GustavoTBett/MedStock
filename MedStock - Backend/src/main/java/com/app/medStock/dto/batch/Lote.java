@@ -3,6 +3,7 @@ package com.app.medStock.dto.batch;
 import com.app.medStock.dto.MasterEntityDto;
 import com.app.medStock.dto.product.Produto;
 import com.app.medStock.model.Batch;
+
 import java.time.LocalDate;
 
 /**

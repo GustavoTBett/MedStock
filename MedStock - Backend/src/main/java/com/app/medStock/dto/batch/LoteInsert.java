@@ -1,6 +1,7 @@
 package com.app.medStock.dto.batch;
 
 import com.app.medStock.model.Batch;
+
 import java.time.LocalDate;
 
 /**

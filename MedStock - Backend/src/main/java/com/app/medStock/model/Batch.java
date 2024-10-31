@@ -1,12 +1,8 @@
 package com.app.medStock.model;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import java.time.LocalDate;
 
 /**
  *
@@ -24,7 +20,7 @@ public class Batch extends MasterEntity{
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
-    
+
     public Long getNumber() {
         return number;
     }
