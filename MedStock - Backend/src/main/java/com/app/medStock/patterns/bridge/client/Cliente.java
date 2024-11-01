@@ -1,4 +1,4 @@
-package com.app.medStock.dto.client;
+package com.app.medStock.patterns.bridge.client;
 
 import com.app.medStock.dto.MasterEntityDto;
 import com.app.medStock.enums.State;

@@ -1,4 +1,4 @@
-package com.app.medStock.dto.client;
+package com.app.medStock.patterns.bridge.client;
 
 import com.app.medStock.enums.State;
 import com.app.medStock.model.Client;

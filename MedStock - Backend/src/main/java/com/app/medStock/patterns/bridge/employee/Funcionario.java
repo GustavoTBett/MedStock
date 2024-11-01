@@ -1,5 +1,6 @@
-package com.app.medStock.dto.employee;
+package com.app.medStock.patterns.bridge.employee;
 
+import com.app.medStock.dto.MasterEntityDto;
 import com.app.medStock.enums.Functions;
 import com.app.medStock.enums.State;
 import com.app.medStock.model.Employee;
@@ -11,7 +12,7 @@ import java.time.LocalDate;
  *
  * @author gustavo
  */
-public class FuncionarioInsert {
+public class Funcionario extends MasterEntityDto {
     private String nome;
     private Functions funcao;
     private LocalDate dataContratacao;
@@ -23,7 +24,10 @@ public class FuncionarioInsert {
     private String endereco;
     private State estado;
     
-    public FuncionarioInsert(Employee employee) {
+    public Funcionario(Employee employee) {
+        this.setId(employee.getId());
+        this.setCriado(employee.getCreated());
+        this.setVersao(employee.getVersion());
         this.nome = employee.getName();
         this.funcao = employee.getFunctions();
         this.dataContratacao = employee.getHiringDate();
@@ -36,10 +40,10 @@ public class FuncionarioInsert {
         this.estado = employee.getState();
     }
 
-    public FuncionarioInsert() {
+    public Funcionario() {
     }
 
-    public FuncionarioInsert(String nome, Functions funcao, LocalDate dataContratacao, BigDecimal salario, String email, Long telefone, String cpf, String cep, String endereco, State estado) {
+    public Funcionario(String nome, Functions funcao, LocalDate dataContratacao, BigDecimal salario, String email, Long telefone, String cpf, String cep, String endereco, State estado) {
         this.nome = nome;
         this.funcao = funcao;
         this.dataContratacao = dataContratacao;

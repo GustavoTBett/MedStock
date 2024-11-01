@@ -1,7 +1,6 @@
 package com.app.medStock.patterns.builder.purchase;
 
 import com.app.medStock.enums.OrderType;
-import com.app.medStock.model.Purchase;
 import com.app.medStock.patterns.builder.ActionGenerator;
 import com.app.medStock.patterns.builder.BuilderAction;
 import lombok.Getter;
