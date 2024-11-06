@@ -1,6 +1,7 @@
-package com.app.medStock.patterns.builder.purchase;
+package com.app.medStock.dto.sale;
 
 import com.app.medStock.enums.OrderType;
+import com.app.medStock.model.Sale;
 import com.app.medStock.patterns.builder.ActionGenerator;
 import com.app.medStock.patterns.builder.BuilderAction;
 import lombok.Getter;
@@ -15,17 +16,11 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class CompraInsert implements BuilderAction {
+public class VendaInsert implements BuilderAction {
     private ActionGenerator actionGenerator;
-    private Long fornecedorId;
+    private Long clientId;
     private List<Long> itensId;
-
-    public CompraInsert(ActionGenerator actionGenerator, Long fornecedorId, List<Long> itensId) {
-        this.actionGenerator = actionGenerator;
-        this.fornecedorId = fornecedorId;
-        this.itensId = itensId;
-    }
-
+    private Long funcionarioId;
 
     @Override
     public ActionGenerator actionGenerator() {
@@ -34,11 +29,11 @@ public class CompraInsert implements BuilderAction {
 
     @Override
     public void setDate(LocalDateTime date) {
-        actionGenerator.setDate(date);
+
     }
 
     @Override
     public void setType(OrderType type) {
-        actionGenerator.setOrderType(type);
+
     }
 }

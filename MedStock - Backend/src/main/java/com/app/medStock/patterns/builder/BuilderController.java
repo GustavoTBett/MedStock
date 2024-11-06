@@ -1,7 +1,7 @@
 package com.app.medStock.patterns.builder;
 
 import com.app.medStock.RequestRateLimiter;
-import com.app.medStock.patterns.builder.purchase.Compra;
+import com.app.medStock.dto.purchase.Compra;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;

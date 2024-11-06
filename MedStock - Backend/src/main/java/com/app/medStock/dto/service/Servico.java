@@ -1,4 +1,4 @@
-package com.app.medStock.patterns.builder.service;
+package com.app.medStock.dto.service;
 
 import com.app.medStock.dto.MasterEntityDto;
 import com.app.medStock.enums.OrderType;
@@ -25,7 +25,7 @@ public class Servico extends MasterEntityDto implements BuilderAction {
     
     public Servico(Service service) {
         this.setId(service.getId());
-        this.setCriado(service.getCreated());
+        this.setCriado(service.getCreatedAt());
         this.setVersao(service.getVersion());
         actionGenerator.setOrderType(service.getOrderType());
         this.clienteId = service.getClient().getId();
@@ -33,18 +33,6 @@ public class Servico extends MasterEntityDto implements BuilderAction {
         this.itemId = service.getItem().getId();
         this.descricao = service.getDescription();
         this.funcionarioId = service.getEmployee().getId();
-    }
-
-    public Servico() {
-        actionGenerator = new ActionGenerator();
-    }
-
-    public Servico(ActionGenerator actionGenerator, Long clienteId, Long itemId, String descricao, Long funcionarioId) {
-        this.actionGenerator = actionGenerator;
-        this.clienteId = clienteId;
-        this.itemId = itemId;
-        this.descricao = descricao;
-        this.funcionarioId = funcionarioId;
     }
 
     @Override

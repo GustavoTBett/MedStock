@@ -1,11 +1,11 @@
-package com.app.medStock.patterns.bridge.client;
+package com.app.medStock.dto.user;
 
 import com.app.medStock.patterns.bridge.LoginBridge;
 import com.app.medStock.patterns.bridge.TipoLogin;
 
-public class ClienteLogin extends LoginBridge {
+public class UserLoginCommon extends LoginBridge {
 
-    public ClienteLogin(TipoLogin tipoLogin) {
+    public UserLoginCommon(TipoLogin tipoLogin) {
         super(tipoLogin);
     }
 

@@ -1,8 +1,8 @@
 package com.app.medStock.controller;
 
 import com.app.medStock.RequestRateLimiter;
-import com.app.medStock.patterns.bridge.client.Cliente;
-import com.app.medStock.patterns.bridge.client.ClienteInsert;
+import com.app.medStock.dto.client.Cliente;
+import com.app.medStock.dto.client.ClienteInsert;
 import com.app.medStock.model.Client;
 import com.app.medStock.repository.ClientRepository;
 import io.swagger.v3.oas.annotations.Operation;

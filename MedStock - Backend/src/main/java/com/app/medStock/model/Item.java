@@ -1,6 +1,10 @@
 package com.app.medStock.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
@@ -10,6 +14,10 @@ import java.math.BigDecimal;
  */
 @Entity
 @Table(name = "item")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Item extends MasterEntity{
     @ManyToOne
     @JoinColumn(name = "product_id")
@@ -22,57 +30,6 @@ public class Item extends MasterEntity{
     private Double fees;
     @Column(name = "discount")
     private Double discount;
-    
-    public Item() {
-    }
-
-    public Item(Product product, Long quantity, BigDecimal price, Double fees, Double discount) {
-        this.product = product;
-        this.quantity = quantity;
-        this.price = price;
-        this.fees = fees;
-        this.discount = discount;
-    }
-
-    public Product getProduct() {
-        return product;
-    }
-
-    public void setProduct(Product product) {
-        this.product = product;
-    }
-
-    public Long getQuantity() {
-        return quantity;
-    }
-
-    public void setQuantity(Long quantity) {
-        this.quantity = quantity;
-    }
-
-    public BigDecimal getPrice() {
-        return price;
-    }
-
-    public void setPrice(BigDecimal price) {
-        this.price = price;
-    }
-
-    public Double getFees() {
-        return fees;
-    }
-
-    public void setFees(Double fees) {
-        this.fees = fees;
-    }
-
-    public Double getDiscount() {
-        return discount;
-    }
-
-    public void setDiscount(Double discount) {
-        this.discount = discount;
-    }
     
     public BigDecimal getFinalPrice() {
         BigDecimal total = price.multiply(BigDecimal.valueOf(quantity));

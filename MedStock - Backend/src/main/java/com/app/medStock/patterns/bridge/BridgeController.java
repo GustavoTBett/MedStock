@@ -1,10 +1,8 @@
 package com.app.medStock.patterns.bridge;
 
 import com.app.medStock.RequestRateLimiter;
-import com.app.medStock.patterns.bridge.client.ClienteLogin;
-import com.app.medStock.patterns.bridge.client.ClienteLoginAdm;
-import com.app.medStock.patterns.bridge.employee.FuncionarioLogin;
-import com.app.medStock.patterns.bridge.employee.FuncionarioLoginAdm;
+import com.app.medStock.dto.user.UserLoginAdm;
+import com.app.medStock.dto.user.UserLoginCommon;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,25 +22,15 @@ public class BridgeController {
             LoginUsuario loginUsuario = new LoginUsuario();
             LoginAdm loginAdm = new LoginAdm();
 
-            ClienteLogin clienteLogin = new ClienteLogin(loginUsuario);
-            clienteLogin.setUsuario("teste");
-            clienteLogin.setSenha("123456");
-            clienteLogin.login();
+            UserLoginCommon userLoginCommon = new UserLoginCommon(loginUsuario);
+            userLoginCommon.setUsuario("teste");
+            userLoginCommon.setSenha("123456");
+            userLoginCommon.login();
 
-            ClienteLoginAdm clienteLoginAdm = new ClienteLoginAdm(loginAdm);
-            clienteLoginAdm.setUsuario("teste");
-            clienteLoginAdm.setSenha("123456");
-            clienteLoginAdm.login();
-
-            FuncionarioLogin funcionarioLogin = new FuncionarioLogin(loginUsuario);
-            funcionarioLogin.setUsuario("teste");
-            funcionarioLogin.setSenha("123456");
-            funcionarioLogin.login();
-
-            FuncionarioLoginAdm funcionarioLoginAdm = new FuncionarioLoginAdm(loginAdm);
-            funcionarioLoginAdm.setUsuario("teste");
-            funcionarioLoginAdm.setSenha("123456");
-            funcionarioLoginAdm.login();
+            UserLoginAdm userLoginAdm = new UserLoginAdm(loginAdm);
+            userLoginAdm.setUsuario("teste");
+            userLoginAdm.setSenha("123456");
+            userLoginAdm.login();
 
             return ResponseEntity.noContent().build();
         } else {

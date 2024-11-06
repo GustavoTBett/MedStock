@@ -1,8 +1,8 @@
 package com.app.medStock.controller;
 
 import com.app.medStock.RequestRateLimiter;
-import com.app.medStock.patterns.bridge.employee.Funcionario;
-import com.app.medStock.patterns.bridge.employee.FuncionarioInsert;
+import com.app.medStock.dto.employee.Funcionario;
+import com.app.medStock.dto.employee.FuncionarioInsert;
 import com.app.medStock.model.Employee;
 import com.app.medStock.repository.EmployeeRepository;
 import io.swagger.v3.oas.annotations.Operation;
