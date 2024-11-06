@@ -1,39 +1,39 @@
-package com.app.medStock.dto.provider;
+package com.app.medStock.patterns.bridge.client;
 
 import com.app.medStock.enums.State;
-import com.app.medStock.model.Provider;
+import com.app.medStock.model.Client;
 
 /**
  *
  * @author gustavo
  */
-public class FornecedorInsert {
+public class ClienteInsert{
     private String nome;
     private String email;
     private Long telefone;
-    private String cnpj;
+    private String cpf;
     private String cep;
     private String endereco;
     private State estado;
     
-    public FornecedorInsert(Provider provider) {
-        this.nome = provider.getName();
-        this.email = provider.getEmail();
-        this.telefone = provider.getPhone();
-        this.cnpj = provider.getCnpj();
-        this.cep = provider.getZipcode();
-        this.endereco = provider.getAddress();
-        this.estado = provider.getState();
+    public ClienteInsert(Client client) {
+        this.nome = client.getName();
+        this.email = client.getEmail();
+        this.telefone = client.getPhone();
+        this.cpf = client.getCpf();
+        this.cep = client.getZipcode();
+        this.endereco = client.getAddress();
+        this.estado = client.getState();
     }
 
-    public FornecedorInsert() {
+    public ClienteInsert() {
     }
 
-    public FornecedorInsert(String nome, String email, Long telefone, String cnpj, String cep, String endereco, State estado) {
+    public ClienteInsert(String nome, String email, Long telefone, String cpf, String cep, String endereco, State estado) {
         this.nome = nome;
         this.email = email;
         this.telefone = telefone;
-        this.cnpj = cnpj;
+        this.cpf = cpf;
         this.cep = cep;
         this.endereco = endereco;
         this.estado = estado;
@@ -63,12 +63,12 @@ public class FornecedorInsert {
         this.telefone = telefone;
     }
 
-    public String getCnpj() {
-        return cnpj;
+    public String getCpf() {
+        return cpf;
     }
 
-    public void setCnpj(String cnpj) {
-        this.cnpj = cnpj;
+    public void setCpf(String cpf) {
+        this.cpf = cpf;
     }
 
     public String getCep() {

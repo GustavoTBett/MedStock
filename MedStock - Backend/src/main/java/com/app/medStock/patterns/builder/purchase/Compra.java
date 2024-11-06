@@ -1,11 +1,9 @@
-package com.app.medStock.dto.sale;
+package com.app.medStock.patterns.builder.purchase;
 
 import com.app.medStock.dto.MasterEntityDto;
 import com.app.medStock.enums.OrderType;
-import com.app.medStock.model.Client;
-import com.app.medStock.model.Employee;
 import com.app.medStock.model.Item;
-import com.app.medStock.model.Sale;
+import com.app.medStock.model.Provider;
 import com.app.medStock.patterns.builder.ActionGenerator;
 import com.app.medStock.patterns.builder.BuilderAction;
 import lombok.Getter;
@@ -20,21 +18,19 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class Venda extends MasterEntityDto implements BuilderAction {
+public class Compra extends MasterEntityDto implements BuilderAction {
     private ActionGenerator actionGenerator;
-    private Client client;
+    private Provider fornecedor;
     private List<Item> itens;
-    private Employee funcionario;
-    
-    public Venda(Sale sale) {
-        this.setId(sale.getId());
-        this.setCriado(sale.getCreatedAt());
-        this.setVersao(sale.getVersion());
-        actionGenerator.setOrderType(sale.getOrderType());
-        actionGenerator.setDate(sale.getSaleDate());
-        this.client = sale.getClient();
-        this.itens = sale.getItens();
-        this.funcionario = sale.getEmployee();
+
+    public Compra() {
+        actionGenerator = new ActionGenerator();
+    }
+
+    public Compra(ActionGenerator actionGenerator, Provider fornecedor, List<Item> itens) {
+        this.actionGenerator = actionGenerator;
+        this.fornecedor = fornecedor;
+        this.itens = itens;
     }
 
     @Override
@@ -51,5 +47,4 @@ public class Venda extends MasterEntityDto implements BuilderAction {
     public void setType(OrderType type) {
         actionGenerator.setOrderType(type);
     }
-    
 }

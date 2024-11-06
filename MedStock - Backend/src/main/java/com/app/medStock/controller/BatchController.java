@@ -53,7 +53,8 @@ public class BatchController {
     public ResponseEntity create(@RequestBody LoteInsert entity) {
         if (rateLimiter.tryAcquire()) {
             try {
-                Batch batch = new Batch(entity.getNumero(), entity.getDataFabricacao(), entity.getDataValidade());
+                Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
+                Batch batch = new Batch(entity.getNumero(), entity.getDataFabricacao(), entity.getDataValidade(), product);
                 batch = batchRepository.save(batch);
                 Lote loteInsert = new Lote(batch);
                 return ResponseEntity.created(URI.create("api/batch/" + loteInsert.getId())).body(loteInsert);
@@ -77,9 +78,11 @@ public class BatchController {
         if (rateLimiter.tryAcquire()) {
             try {
                 Batch batch = batchRepository.findById(id).get();
+                Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
                 batch.setNumber(entity.getNumero());
                 batch.setFabricationDate(entity.getDataFabricacao());
                 batch.setValidDate(entity.getDataValidade());
+                batch.setProduct(product);
                 batch = batchRepository.save(batch);
                 Lote lote = new Lote(batch);
                 return ResponseEntity.ok(lote);

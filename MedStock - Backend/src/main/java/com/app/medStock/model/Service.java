@@ -2,9 +2,6 @@ package com.app.medStock.model;
 
 import com.app.medStock.enums.OrderType;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -15,9 +12,6 @@ import java.time.LocalDateTime;
  */
 @Entity
 @Table(name = "service")
-@Getter
-@Setter
-@NoArgsConstructor
 public class Service extends MasterEntity implements FinancialOperations {
     @Column(name = "service_date")
     private LocalDateTime serviceDate;
@@ -34,12 +28,59 @@ public class Service extends MasterEntity implements FinancialOperations {
     @OneToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
+    
+    public Service() {
+    }
 
     public Service(LocalDateTime purchaseDate, Client client, String description, Item item, Employee employee) {
         this.serviceDate = purchaseDate;
         this.client = client;
         this.description = description;
         this.item = item;
+        this.employee = employee;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    public void setClient(Client client) {
+        this.client = client;
+    }
+
+    public OrderType getType() {
+        return type;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalDateTime getServiceDate() {
+        return serviceDate;
+    }
+
+    public void setServiceDate(LocalDateTime serviceDate) {
+        this.serviceDate = serviceDate;
+    }
+
+    public Item getItem() {
+        return item;
+    }
+
+    public void setItem(Item item) {
+        this.item = item;
+    }
+
+    public Employee getEmployee() {
+        return employee;
+    }
+
+    public void setEmployee(Employee employee) {
         this.employee = employee;
     }
    

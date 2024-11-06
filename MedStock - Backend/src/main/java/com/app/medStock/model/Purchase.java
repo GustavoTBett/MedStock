@@ -2,10 +2,6 @@ package com.app.medStock.model;
 
 import com.app.medStock.enums.OrderType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,9 +14,6 @@ import java.util.List;
  */
 @Entity
 @Table(name = "purchase")
-@Getter
-@Setter
-@NoArgsConstructor
 public class Purchase extends MasterEntity implements FinancialOperations {
     @Column(name = "purchase_date")
     private LocalDateTime purchaseDate;
@@ -32,9 +25,40 @@ public class Purchase extends MasterEntity implements FinancialOperations {
     @OneToMany
     private List<Item> itens = new ArrayList<>();
 
+    public Purchase() {
+    }
+
     public Purchase(LocalDateTime purchaseDate, Provider provider, List<Item> itens) {
         this.purchaseDate = purchaseDate;
         this.provider = provider;
+        this.itens = itens;
+    }
+
+    public LocalDateTime getPurchaseDate() {
+        return purchaseDate;
+    }
+
+    public void setPurchaseDate(LocalDateTime purchaseDate) {
+        this.purchaseDate = purchaseDate;
+    }
+
+    public Provider getProvider() {
+        return provider;
+    }
+
+    public void setProvider(Provider provider) {
+        this.provider = provider;
+    }
+
+    public OrderType getType() {
+        return type;
+    }
+
+    public List<Item> getItens() {
+        return itens;
+    }
+
+    public void setItens(List<Item> itens) {
         this.itens = itens;
     }
     
