@@ -10,7 +10,7 @@ public class UserLoginCommon extends LoginBridge {
     }
 
     @Override
-    public void login() {
-        System.out.println("Cliente login");
+    public String login() {
+        return this.tipoLogin.fazerLogin(this.usuario, this.senha);
     }
 }

@@ -1,7 +1,9 @@
 package com.app.medStock.patterns.bridge;
 
+import com.app.medStock.model.User;
+
 public abstract class LoginBridge {
-    protected String usuario;
+    protected User usuario;
     protected String senha;
     protected TipoLogin tipoLogin;
 
@@ -9,7 +11,7 @@ public abstract class LoginBridge {
         this.tipoLogin = tipoLogin;
     }
 
-    public void setUsuario(String usuario) {
+    public void setUsuario(User usuario) {
         this.usuario = usuario;
     }
 
@@ -17,5 +19,5 @@ public abstract class LoginBridge {
         this.senha = senha;
     }
 
-    protected abstract void login();
+    protected abstract String login();
 }

@@ -1,11 +1,13 @@
 package com.app.medStock.patterns.bridge;
 
 import com.app.medStock.RequestRateLimiter;
-import com.app.medStock.dto.user.UserLoginAdm;
 import com.app.medStock.dto.user.UserLoginCommon;
+import com.app.medStock.enums.RoleUsers;
+import com.app.medStock.model.User;
+import com.app.medStock.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -16,25 +18,39 @@ public class BridgeController {
     @Autowired
     private RequestRateLimiter rateLimiter;
 
-    @GetMapping
-    public ResponseEntity bridge() {
+    @Autowired
+    private UserRepository userRepository;
+
+    @PostMapping
+    public ResponseEntity bridge(String email, String password) {
         if (rateLimiter.tryAcquire()) {
-            LoginUsuario loginUsuario = new LoginUsuario();
-            LoginAdm loginAdm = new LoginAdm();
+            User user = userRepository.findByEmail(email);
 
-            UserLoginCommon userLoginCommon = new UserLoginCommon(loginUsuario);
-            userLoginCommon.setUsuario("teste");
-            userLoginCommon.setSenha("123456");
-            userLoginCommon.login();
+            if (user == null) {
+                return ResponseEntity.badRequest().body("Usuário ou senha incorreto");
+            }
 
-            UserLoginAdm userLoginAdm = new UserLoginAdm(loginAdm);
-            userLoginAdm.setUsuario("teste");
-            userLoginAdm.setSenha("123456");
-            userLoginAdm.login();
+            UserLoginCommon userCommon;
 
-            return ResponseEntity.noContent().build();
-        } else {
-            return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
+            if (user.getRole().equals(RoleUsers.USER)) {
+                LoginUsuario loginUsuario = new LoginUsuario();
+                userCommon =  new UserLoginCommon(loginUsuario);
+                userCommon.setSenha(password);
+                userCommon.setUsuario(user);
+                return ResponseEntity.ok().body(userCommon.login());
+            }
+
+            if (user.getRole().equals(RoleUsers.ADMIN)) {
+                LoginAdm loginAdm = new LoginAdm();
+                userCommon =  new UserLoginCommon(loginAdm);
+                userCommon.setSenha(password);
+                userCommon.setUsuario(user);
+                return ResponseEntity.ok().body(userCommon.login());
+            }
+
+            return ResponseEntity.badRequest().body("Role não encontrada");
         }
+
+        return ResponseEntity.status(429).body("Muitas solicitações, limite de requisições foi excedido");
     }
 }

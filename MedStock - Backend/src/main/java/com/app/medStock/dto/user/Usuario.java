@@ -16,7 +16,7 @@ public class Usuario extends MasterEntityDto{
     
     public Usuario(User user) {
         this.setId(user.getId());
-        this.setCriado(user.getCreated());
+        this.setCriado(user.getCreatedAt());
         this.setVersao(user.getVersion());
         this.nome = user.getName();
         this.email = user.getEmail();

@@ -11,9 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum RoleUsers {
     ADMIN('A'),
-    USER('U'),
-    VIEWER('V'),
-    OPERATOR('O');
+    USER('U');
     
     private final char id;
 }

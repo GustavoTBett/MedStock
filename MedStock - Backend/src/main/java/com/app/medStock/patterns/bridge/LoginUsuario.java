@@ -1,9 +1,13 @@
 package com.app.medStock.patterns.bridge;
 
-public class LoginUsuario implements TipoLogin{
+import com.app.medStock.model.User;
+
+public class LoginUsuario implements TipoLogin {
     @Override
-    public void fazerLogin(String usuario, String senha) {
-        System.out.println("Login tipo usuario");
-        this.fazerLogin(usuario, senha);
+    public String fazerLogin(User user, String password) {
+        if (user.getPassword().equals(password)) {
+            return "Login Usuário Sucesso";
+        }
+        return "Usuário ou senha incorreto";
     }
 }
