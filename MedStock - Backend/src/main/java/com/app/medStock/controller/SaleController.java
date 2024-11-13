@@ -7,6 +7,7 @@ import com.app.medStock.model.Item;
 import com.app.medStock.model.Sale;
 import com.app.medStock.dto.sale.Venda;
 import com.app.medStock.dto.sale.VendaInsert;
+import com.app.medStock.patterns.builder.DirectorAction;
 import com.app.medStock.repository.ClientRepository;
 import com.app.medStock.repository.EmployeeRepository;
 import com.app.medStock.repository.SaleRepository;
@@ -22,6 +23,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -65,9 +67,16 @@ public class SaleController {
                     itens.add(itemService.findByItemWithQuantity(action));
                 });
                 Employee employee = employeeRepository.findById(entity.getFuncionarioId()).orElse(null);
-                Sale sale = new Sale(entity.getActionGenerator().getDate(), client, itens, employee);
+                Sale sale = new Sale(entity.getData(), client, itens, employee);
                 sale = saleRepository.save(sale);
-                Venda venda = new Venda(sale);
+
+                Venda venda = new Venda();
+                venda.setClient(client);
+                venda.setItens(itens);
+                venda.setFuncionario(employee);
+                DirectorAction directorAction = new DirectorAction(venda);
+                directorAction.createVenda(entity.getData());
+
                 return ResponseEntity.created(URI.create("api/sale/" + venda.getId())).body(venda);
             } catch (Exception err) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
@@ -95,11 +104,20 @@ public class SaleController {
                     itens.add(itemService.findByItemWithQuantity(action));
                 });
                 Employee employee = employeeRepository.findById(entity.getFuncionarioId()).orElse(null);
-                sale.setSaleDate(entity.actionGenerator().getDate());
+
+                sale.setSaleDate(entity.getData());
                 sale.setClient(client);
                 sale.setItens(itens);
                 sale.setEmployee(employee);
-                Venda venda = new Venda(sale);
+                saleRepository.save(sale);
+
+                Venda venda = new Venda();
+                venda.setItens(itens);
+                venda.setClient(client);
+                venda.setFuncionario(employee);
+                DirectorAction directorAction = new DirectorAction(venda);
+                directorAction.createVenda(entity.getData());
+
                 return ResponseEntity.ok(venda);
             } catch (Exception err) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());

@@ -4,6 +4,7 @@ import com.app.medStock.dto.MasterEntityDto;
 import com.app.medStock.enums.OrderType;
 import com.app.medStock.model.Item;
 import com.app.medStock.model.Provider;
+import com.app.medStock.model.Purchase;
 import com.app.medStock.patterns.builder.ActionGenerator;
 import com.app.medStock.patterns.builder.BuilderAction;
 import lombok.Getter;
@@ -24,13 +25,15 @@ public class Compra extends MasterEntityDto implements BuilderAction {
     private List<Item> itens;
 
     public Compra() {
-        actionGenerator = new ActionGenerator();
+        this.actionGenerator = new ActionGenerator();
     }
 
-    public Compra(ActionGenerator actionGenerator, Provider fornecedor, List<Item> itens) {
-        this.actionGenerator = actionGenerator;
-        this.fornecedor = fornecedor;
-        this.itens = itens;
+    public Compra(Purchase purchase) {
+        this.actionGenerator = new ActionGenerator();
+        this.actionGenerator.setDate(purchase.getPurchaseDate());
+        this.actionGenerator.setOrderType(purchase.getOrderType());
+        this.fornecedor = purchase.getProvider();
+        this.itens = purchase.getItens();
     }
 
     @Override

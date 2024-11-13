@@ -25,8 +25,13 @@ public class Venda extends MasterEntityDto implements BuilderAction {
     private Client client;
     private List<Item> itens;
     private Employee funcionario;
-    
+
+    public Venda() {
+        this.actionGenerator = new ActionGenerator();
+    }
+
     public Venda(Sale sale) {
+        this.actionGenerator = new ActionGenerator();
         this.setId(sale.getId());
         this.setCriado(sale.getCreatedAt());
         this.setVersao(sale.getVersion());

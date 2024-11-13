@@ -2,6 +2,9 @@ package com.app.medStock.dto.service;
 
 import com.app.medStock.dto.MasterEntityDto;
 import com.app.medStock.enums.OrderType;
+import com.app.medStock.model.Client;
+import com.app.medStock.model.Employee;
+import com.app.medStock.model.Item;
 import com.app.medStock.model.Service;
 import com.app.medStock.patterns.builder.ActionGenerator;
 import com.app.medStock.patterns.builder.BuilderAction;
@@ -9,6 +12,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  *
@@ -18,21 +22,26 @@ import java.time.LocalDateTime;
 @Setter
 public class Servico extends MasterEntityDto implements BuilderAction {
     private ActionGenerator actionGenerator;
-    private Long clienteId;
-    private Long itemId;
+    private Client client;
+    private Item item;
+    private Employee funcionario;
     private String descricao;
-    private Long funcionarioId;
-    
+
+    public Servico() {
+        this.actionGenerator = new ActionGenerator();
+    }
+
     public Servico(Service service) {
+        this.actionGenerator = new ActionGenerator();
         this.setId(service.getId());
         this.setCriado(service.getCreatedAt());
         this.setVersao(service.getVersion());
         actionGenerator.setOrderType(service.getOrderType());
-        this.clienteId = service.getClient().getId();
+        this.client = service.getClient();
         actionGenerator.setDate(service.getOrderDate());
-        this.itemId = service.getItem().getId();
+        this.item = service.getItem();
         this.descricao = service.getDescription();
-        this.funcionarioId = service.getEmployee().getId();
+        this.funcionario = service.getEmployee();
     }
 
     @Override

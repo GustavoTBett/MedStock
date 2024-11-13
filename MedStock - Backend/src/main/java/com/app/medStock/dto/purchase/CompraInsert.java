@@ -15,30 +15,14 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class CompraInsert implements BuilderAction {
-    private ActionGenerator actionGenerator;
+public class CompraInsert {
+    private LocalDateTime date;
     private Long fornecedorId;
     private List<Long> itensId;
 
-    public CompraInsert(ActionGenerator actionGenerator, Long fornecedorId, List<Long> itensId) {
-        this.actionGenerator = actionGenerator;
+    public CompraInsert(LocalDateTime date, Long fornecedorId, List<Long> itensId) {
+        this.date = date;
         this.fornecedorId = fornecedorId;
         this.itensId = itensId;
-    }
-
-
-    @Override
-    public ActionGenerator actionGenerator() {
-        return actionGenerator;
-    }
-
-    @Override
-    public void setDate(LocalDateTime date) {
-        actionGenerator.setDate(date);
-    }
-
-    @Override
-    public void setType(OrderType type) {
-        actionGenerator.setOrderType(type);
     }
 }

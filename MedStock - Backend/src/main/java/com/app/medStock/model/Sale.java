@@ -23,14 +23,14 @@ import java.util.List;
 public class Sale extends MasterEntity implements FinancialOperations {
     @Column(name = "sale_date")
     private LocalDateTime saleDate;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
     @Column(name = "type")
     private OrderType type = OrderType.SALE;
-    @OneToMany
+    @ManyToMany
     private List<Item> itens = new ArrayList<>();
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
 

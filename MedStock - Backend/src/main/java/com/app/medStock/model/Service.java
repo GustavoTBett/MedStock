@@ -21,17 +21,17 @@ import java.time.LocalDateTime;
 public class Service extends MasterEntity implements FinancialOperations {
     @Column(name = "service_date")
     private LocalDateTime serviceDate;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "client_id")
     private Client client;
     @Column(name = "type")
     private OrderType type = OrderType.SERVICE;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "item_id")
     private Item item;
     @Column(name = "description")
     private String description;
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "employee_id")
     private Employee employee;
 

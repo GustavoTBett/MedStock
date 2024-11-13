@@ -16,24 +16,16 @@ import java.util.List;
  */
 @Getter
 @Setter
-public class VendaInsert implements BuilderAction {
-    private ActionGenerator actionGenerator;
+public class VendaInsert {
+    private LocalDateTime data;
     private Long clientId;
     private List<Long> itensId;
     private Long funcionarioId;
 
-    @Override
-    public ActionGenerator actionGenerator() {
-        return actionGenerator;
-    }
-
-    @Override
-    public void setDate(LocalDateTime date) {
-
-    }
-
-    @Override
-    public void setType(OrderType type) {
-
+    public VendaInsert(LocalDateTime data, Long clientId, List<Long> itensId, Long funcionarioId) {
+        this.data = data;
+        this.clientId = clientId;
+        this.itensId = itensId;
+        this.funcionarioId = funcionarioId;
     }
 }

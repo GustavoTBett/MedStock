@@ -29,7 +29,7 @@ public class Purchase extends MasterEntity implements FinancialOperations {
     private Provider provider;
     @Column(name = "type")
     private OrderType type = OrderType.PURCHASE;
-    @OneToMany
+    @ManyToMany
     private List<Item> itens = new ArrayList<>();
 
     public Purchase(LocalDateTime purchaseDate, Provider provider, List<Item> itens) {

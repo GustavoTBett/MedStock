@@ -1,12 +1,14 @@
 package com.app.medStock.controller;
 
 import com.app.medStock.RequestRateLimiter;
+import com.app.medStock.dto.sale.Venda;
 import com.app.medStock.model.Client;
 import com.app.medStock.model.Employee;
 import com.app.medStock.model.Item;
 import com.app.medStock.model.Service;
 import com.app.medStock.dto.service.Servico;
 import com.app.medStock.dto.service.ServicoInsert;
+import com.app.medStock.patterns.builder.DirectorAction;
 import com.app.medStock.repository.ClientRepository;
 import com.app.medStock.repository.EmployeeRepository;
 import com.app.medStock.repository.ItemRepository;
@@ -22,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -62,10 +65,17 @@ public class ServiceController {
                 Client client = clientRepository.findById(entity.getClienteId()).orElse(null);
                 Item item = itemRepository.findById(entity.getItemId()).orElse(null);
                 Employee employee = employeeRepository.findById(entity.getFuncionarioId()).orElse(null);
-                Service save = new Service(entity.getActionGenerator().getDate(), client, entity.getDescricao(), item, employee);
-                save = serviceRepository.save(save);
-                Servico servico = new Servico(save);
-                return ResponseEntity.created(URI.create("api/service/" + servico.getId())).body(servico);
+                Service service = new Service(entity.getData(), client, entity.getDescricao(), item, employee);
+                service = serviceRepository.save(service);
+
+                Servico servico = new Servico();
+                servico.setClient(client);
+                servico.setItem(item);
+                servico.setFuncionario(employee);
+                DirectorAction directorAction = new DirectorAction(servico);
+                directorAction.createVenda(entity.getData());
+
+                return ResponseEntity.status(201).body(servico);
             } catch (Exception err) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
             }
@@ -89,12 +99,19 @@ public class ServiceController {
                 Item item = itemRepository.findById(entity.getItemId()).orElse(null);
                 Employee employee = employeeRepository.findById(entity.getFuncionarioId()).orElse(null);
                 Service service = serviceRepository.findById(id).get();
-                service.setServiceDate(entity.getActionGenerator().getDate());
+                service.setServiceDate(entity.getData());
                 service.setClient(client);
                 service.setItem(item);
                 service.setDescription(entity.getDescricao());
                 service.setEmployee(employee);
-                Servico servico = new Servico(service);
+
+                Servico servico = new Servico();
+                servico.setClient(client);
+                servico.setItem(item);
+                servico.setFuncionario(employee);
+                DirectorAction directorAction = new DirectorAction(servico);
+                directorAction.createServico(entity.getData());
+
                 return ResponseEntity.ok(servico);
             } catch (Exception err) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());

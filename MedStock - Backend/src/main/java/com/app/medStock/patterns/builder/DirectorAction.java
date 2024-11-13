@@ -13,17 +13,17 @@ public class DirectorAction {
         this.builderAction = builderAction;
     }
 
-    void createCompra(LocalDateTime localDateTime) {
+    public void createCompra(LocalDateTime localDateTime) {
         builderAction.setDate(localDateTime);
         builderAction.setType(OrderType.PURCHASE);
     }
 
-    void createVenda(LocalDateTime localDateTime) {
+    public void createVenda(LocalDateTime localDateTime) {
         builderAction.setDate(localDateTime);
         builderAction.setType(OrderType.SALE);
     }
 
-    void createServico(LocalDateTime localDateTime) {
+    public void createServico(LocalDateTime localDateTime) {
         builderAction.setDate(localDateTime);
         builderAction.setType(OrderType.SERVICE);
     }

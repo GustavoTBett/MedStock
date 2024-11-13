@@ -7,6 +7,7 @@ import com.app.medStock.model.Purchase;
 import com.app.medStock.patterns.builder.ActionGenerator;
 import com.app.medStock.dto.purchase.Compra;
 import com.app.medStock.dto.purchase.CompraInsert;
+import com.app.medStock.patterns.builder.DirectorAction;
 import com.app.medStock.repository.ItemRepository;
 import com.app.medStock.repository.ProviderRepository;
 import com.app.medStock.repository.PurchaseRepository;
@@ -60,12 +61,15 @@ public class PurchaseController {
                 entity.getItensId().forEach(action -> {
                     itens.add(itemRepository.findById(action).orElse(null));
                 });
-                Purchase purchase = new Purchase(entity.getActionGenerator().getDate(), provider, itens);
+                Purchase purchase = new Purchase(entity.getDate(), provider, itens);
                 purchase = purchaseRepository.save(purchase);
-                ActionGenerator actionGenerator = new ActionGenerator();
-                actionGenerator.setOrderType(purchase.getOrderType());
-                actionGenerator.setDate(purchase.getOrderDate());
-                Compra compra = new Compra(actionGenerator, purchase.getProvider(), purchase.getItens());
+
+                Compra compra = new Compra();
+                compra.setFornecedor(purchase.getProvider());
+                compra.setItens(purchase.getItens());
+                DirectorAction directorAction = new DirectorAction(compra);
+                directorAction.createCompra(purchase.getPurchaseDate());
+
                 return ResponseEntity.created(URI.create("api/purchase/" + compra.getId())).body(compra);
             } catch (Exception err) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
@@ -92,13 +96,17 @@ public class PurchaseController {
                 entity.getItensId().forEach(action -> {
                     itens.add(itemRepository.findById(action).orElse(null));
                 });
-                purchase.setPurchaseDate(entity.getActionGenerator().getDate());
+                purchase.setPurchaseDate(entity.getDate());
                 purchase.setProvider(provider);
                 purchase.setItens(itens);
-                ActionGenerator actionGenerator = new ActionGenerator();
-                actionGenerator.setOrderType(purchase.getOrderType());
-                actionGenerator.setDate(purchase.getOrderDate());
-                Compra compra = new Compra(actionGenerator, purchase.getProvider(), purchase.getItens());
+                purchaseRepository.save(purchase);
+
+                Compra compra = new Compra();
+                compra.setFornecedor(purchase.getProvider());
+                compra.setItens(purchase.getItens());
+                DirectorAction directorAction = new DirectorAction(compra);
+                directorAction.createCompra(purchase.getPurchaseDate());
+
                 return ResponseEntity.ok(compra);
             } catch (Exception err) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
@@ -121,11 +129,13 @@ public class PurchaseController {
                 List<Purchase> purchases = purchaseRepository.findAll();
                 List<Compra> compras = new ArrayList<>();
                 purchases.forEach(action -> {
-                    ActionGenerator actionGenerator = new ActionGenerator();
-                    actionGenerator.setOrderType(action.getOrderType());
-                    actionGenerator.setDate(action.getOrderDate());
+                    Compra compra = new Compra();
+                    compra.setItens(action.getItens());
+                    compra.setFornecedor(action.getProvider());
+                    DirectorAction directorAction = new DirectorAction(compra);
+                    directorAction.createCompra(action.getPurchaseDate());
 
-                    compras.add(new Compra(actionGenerator, action.getProvider(), action.getItens()));
+                    compras.add(compra);
                 });
                 return ResponseEntity.ok(compras);
             } catch (Exception err) {
@@ -148,11 +158,12 @@ public class PurchaseController {
         if (rateLimiter.tryAcquire()) {
             try {
                 Purchase purchase = purchaseRepository.findById(id).orElse(null);
-                ActionGenerator actionGenerator = new ActionGenerator();
-                actionGenerator.setOrderType(purchase.getOrderType());
-                actionGenerator.setDate(purchase.getOrderDate());
+                Compra compra = new Compra();
+                compra.setItens(purchase.getItens());
+                compra.setFornecedor(purchase.getProvider());
+                DirectorAction directorAction = new DirectorAction(compra);
+                directorAction.createCompra(purchase.getPurchaseDate());
 
-                Compra compra = new Compra(actionGenerator, purchase.getProvider(), purchase.getItens());
                 return ResponseEntity.ok(compra);
             } catch (Exception err) {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(err.getLocalizedMessage());
