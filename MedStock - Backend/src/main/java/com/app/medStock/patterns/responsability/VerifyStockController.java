@@ -1,9 +1,9 @@
 package com.app.medStock.patterns.responsability;
 
 import com.app.medStock.model.Batch;
-import com.app.medStock.model.Product;
+import com.app.medStock.model.Item;
 import com.app.medStock.repository.BatchRepository;
-import com.app.medStock.repository.ProductRepository;
+import com.app.medStock.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -17,29 +17,34 @@ import org.springframework.web.bind.annotation.RestController;
 public class VerifyStockController {
 
     @Autowired
-    private VerifyStockOk verifyStockOk;
+    private VerifyPurchaseOk verifyPurchaseOk;
 
     @Autowired
-    private ProductRepository productRepository;
+    private ItemRepository itemRepository;
 
     @Autowired
     private BatchRepository batchRepository;
 
     @GetMapping("/verify")
-    public ResponseEntity verifyStock(@RequestParam Long productId, @RequestParam Long batchId) {
-        Product product = productRepository.findById(productId).orElse(null);
+    public ResponseEntity verify(@RequestParam Long itemId, @RequestParam Long batchId) {
+        Item item = itemRepository.findById(itemId).orElse(null);
         Batch batch = batchRepository.findById(batchId).orElse(null);
 
-        if (product == null || batch == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Produto ou lote não encontrado.");
+        if (item == null || batch == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item ou lote não encontrado.");
         }
 
-        long quantity = 0;
+        String verify = null;
         try {
-            quantity = verifyStockOk.verifyStock(product, batch);
+            verify = verifyPurchaseOk.verifyStock(item, batch);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-        return ResponseEntity.ok("Quantidade disponível: " + quantity);
+
+        if (!verify.equals("Valor correto")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao salvar compra");
+        } else {
+            return ResponseEntity.ok("Compra correta");
+        }
     }
 }
