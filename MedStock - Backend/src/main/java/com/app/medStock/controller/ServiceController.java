@@ -9,6 +9,7 @@ import com.app.medStock.model.Service;
 import com.app.medStock.dto.service.Servico;
 import com.app.medStock.dto.service.ServicoInsert;
 import com.app.medStock.patterns.builder.DirectorAction;
+import com.app.medStock.patterns.responsability.VerifyPurchaseOk;
 import com.app.medStock.repository.ClientRepository;
 import com.app.medStock.repository.EmployeeRepository;
 import com.app.medStock.repository.ItemRepository;
@@ -51,6 +52,9 @@ public class ServiceController {
     @Autowired
     private RequestRateLimiter rateLimiter;
 
+    @Autowired
+    private VerifyPurchaseOk verifyPurchaseOk;
+
     @PostMapping
     @Operation(summary = "Criar serviço")
     @ApiResponses(value = {
@@ -74,6 +78,17 @@ public class ServiceController {
                 servico.setFuncionario(employee);
                 DirectorAction directorAction = new DirectorAction(servico);
                 directorAction.createVenda(entity.getData());
+
+                String verify = null;
+                try {
+                    verify = verifyPurchaseOk.verifyStock(item, item.getStock().getBatch());
+                } catch (Exception e) {
+                    throw new RuntimeException(e);
+                }
+
+                if (!verify.equals("Valor correto")) {
+                    return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Erro ao salvar compra");
+                }
 
                 return ResponseEntity.status(201).body(servico);
             } catch (Exception err) {

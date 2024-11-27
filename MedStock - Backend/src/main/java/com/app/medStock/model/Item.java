@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 /**
  *
@@ -30,6 +31,9 @@ public class Item extends MasterEntity{
     private Double fees;
     @Column(name = "discount")
     private Double discount;
+    @ManyToOne
+    @JoinColumn(name = "stock_id")
+    private Stock stock;
     
     public BigDecimal getFinalPrice() {
         BigDecimal total = price.multiply(BigDecimal.valueOf(quantity));

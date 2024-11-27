@@ -5,8 +5,10 @@ import com.app.medStock.dto.item.ItemDto;
 import com.app.medStock.dto.item.ItemInsert;
 import com.app.medStock.model.Item;
 import com.app.medStock.model.Product;
+import com.app.medStock.model.Stock;
 import com.app.medStock.repository.ItemRepository;
 import com.app.medStock.repository.ProductRepository;
+import com.app.medStock.repository.StockRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -33,12 +35,16 @@ public class ItemController {
     @Autowired
     private RequestRateLimiter rateLimiter;
 
+    @Autowired
+    private StockRepository stockRepository;
+
     @PostMapping
     public ResponseEntity create(@RequestBody ItemInsert entity) {
         if (rateLimiter.tryAcquire()) {
             try {
                 Product product = productRepository.findById(entity.getProdutoId()).orElse(null);
-                Item item = new Item(product, entity.getQuantidade(), entity.getPreco(), entity.getJuros(), entity.getDesconto());
+                Stock stock = stockRepository.findById(entity.getEstoqueId()).orElse(null);
+                Item item = new Item(product, entity.getQuantidade(), entity.getPreco(), entity.getJuros(), entity.getDesconto(), stock);
                 item = itemRepository.save(item);
                 ItemDto itemDto = new ItemDto(item);
                 return ResponseEntity.created(URI.create("api/item/" + itemDto.getId())).body(itemDto);

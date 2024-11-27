@@ -26,17 +26,16 @@ public class VerifyStockController {
     private BatchRepository batchRepository;
 
     @GetMapping("/verify")
-    public ResponseEntity verify(@RequestParam Long itemId, @RequestParam Long batchId) {
+    public ResponseEntity verify(@RequestParam Long itemId) {
         Item item = itemRepository.findById(itemId).orElse(null);
-        Batch batch = batchRepository.findById(batchId).orElse(null);
 
-        if (item == null || batch == null) {
+        if (item == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Item ou lote não encontrado.");
         }
 
         String verify = null;
         try {
-            verify = verifyPurchaseOk.verifyStock(item, batch);
+            verify = verifyPurchaseOk.verifyStock(item, item.getStock().getBatch());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

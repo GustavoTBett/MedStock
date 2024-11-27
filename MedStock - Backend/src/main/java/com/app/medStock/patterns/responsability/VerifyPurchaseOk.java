@@ -12,7 +12,7 @@ public class VerifyPurchaseOk {
     @Autowired
     private StockRepository stockRepository;
 
-    String verifyStock(Item item, Batch batch) throws Exception {
+    public String verifyStock(Item item, Batch batch) throws Exception {
         VerifyValue verifyValue = new VerifyValue();
         ExistStock existStock = new ExistStock(stockRepository);
 

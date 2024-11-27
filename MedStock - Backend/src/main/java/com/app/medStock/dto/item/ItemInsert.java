@@ -16,4 +16,5 @@ public class ItemInsert {
     private BigDecimal preco;
     private Double juros;
     private Double desconto;
+    private Long estoqueId;
 }
